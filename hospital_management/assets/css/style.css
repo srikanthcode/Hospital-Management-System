@@ -1,0 +1,738 @@
+/* BODY */
+
+body{
+    margin:0;
+    font-family:'Poppins',Arial, sans-serif;
+    background: #FFF5F8;
+    color: #4a4a4a;
+}
+
+/* HEADER */
+.header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#FFFFFF;
+
+    padding:18px 40px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
+    border-bottom:4px solid #E91E63;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+}
+
+/* Logo */
+
+.logo-area{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.logo-area img{
+
+    height:70px;
+    border-radius: 50%;
+
+}
+
+.hospital-name{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:#E91E63;
+
+    letter-spacing: 1px;
+
+}
+
+/* Emergency */
+.emergency-btn{
+    background:#D32F2F;
+    color:#fff;
+    border:2px solid #d32F2F;
+    padding:12px 28px;
+    border-radius:30px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.emergency-btn:hover{
+    background:#b71C1C;
+    border-color:#b71C1C;
+}
+
+.emergency-btn:focus,
+.emergency-btn:active{
+    background:#dc3545;
+    color:#fff;
+    border-color:#dc3545;
+    outline:none;
+    box-shadow:none;
+}
+/* NABH */
+
+.nabh-logo img{
+
+    height:60px;
+
+}
+
+/* Menu */
+
+.menu-icon{
+
+    font-size:32px;
+
+    cursor:pointer;
+
+    display:none;
+
+}
+
+/* Navigation */
+
+.navbar-custom{
+
+    background:linear-gradient(90deg, #E91E63, #F8BBD0);
+    display: flex;
+    justify-content:flex-end;
+    text-align:center;
+    gap:10px;
+    padding:12px 40px; 
+}
+
+   
+
+.navbar-custom a{
+
+    color:white;
+
+    text-decoration:none;
+
+    display:inline-block;
+
+    padding:10px 18px;
+
+    font-weight:600;
+
+    border-radius: 8px;
+
+    transition:0.3s;
+
+}
+
+.navbar-custom a:hover{
+
+    background: #C2185B;
+    color: #fff;
+    border-radius: 6px;
+    transition: 0.3s;
+
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+.menu-icon{
+
+display:block;
+
+}
+
+.navbar-custom{
+
+display:none;
+
+}
+
+.navbar-custom.active{
+
+display:block;
+
+}
+
+.navbar-custom a{
+
+display:block;
+
+border-top:1px solid rgba(255,255,255,.2);
+
+}
+
+.hospital-name{
+
+font-size:18px;
+
+}
+
+.logo-area img{
+
+height:50px;
+
+}
+
+.nabh-logo img{
+
+height:45px;
+
+}
+
+}
+/* ================= HERO BANNER ================= */
+
+#heroSlider {
+    position: relative;
+}
+
+.hero-img {
+    width: 100%;
+    height: 700px;
+    object-fit: cover;
+    filter:none;
+}
+
+/* Dark Overlay */
+.carousel-item::before {
+    content: none;
+    position: absolute;
+    inset: 0;
+    background:linear-gradient(
+        rgba(233,30,99,0.35),
+        rgba(248,187,208,0.35)
+        );
+    z-index: 1;
+}
+
+/* Caption */
+.carousel-caption {
+    z-index: 2;
+    bottom: 50%;
+    transform: translateY(50%);
+    text-align: center;
+}
+
+.carousel-caption h1 {
+    font-size: 60px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+}
+
+.carousel-caption p {
+    font-size: 22px;
+    color: #F8FFF8;
+    max-width: 750px;
+    margin: 0 auto 25px;
+    line-height: 1.8;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+}
+
+/* Book Appointment Button */
+.carousel-caption .btn {
+    padding: 12px 32px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 30px;
+}
+.carousel-caption .btn{
+    background:#E91E63;
+    color:#fff;
+    border:none;
+    padding:14px 35px;
+    border-radius:40px;
+    font-size:18px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.carousel-caption .btn:hover{
+    background:#C2185B;
+    transform:scale(1.05);
+}
+
+/* Previous & Next Buttons */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-size: 60%;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+}
+
+/* Dot Indicators */
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 6px;
+}
+
+.carousel-indicators .active {
+    background-color: #dc3545;
+}
+
+/* Heading Above Slider */
+.hero-heading {
+    padding: 30px 15px;
+    text-align: center;
+    background: #ffffff;
+}
+
+.hero-heading h2 {
+    color: #0d6efd;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.hero-heading p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+/* Mobile Responsive */
+@media (max-width:768px){
+
+    .hero-img{
+        height:420px;
+    }
+
+    .carousel-caption{
+        bottom:35%;
+    }
+
+    .carousel-caption h1{
+        font-size:2rem;
+    }
+
+    .carousel-caption p{
+        font-size:1rem;
+    }
+
+    .carousel-caption .btn{
+        padding:10px 24px;
+        font-size:16px;
+    }
+
+    .hero-heading h2{
+        font-size:1.6rem;
+    }
+
+}
+/* ================= HOSPITAL OVERVIEW ================= */
+
+.hospital-overview{
+
+    background:#FFF5F8;
+    padding:80px 0;
+
+}
+
+.hospital-overview h2{
+
+    font-weight:700;
+
+    color:#E91E63;
+
+    margin-bottom:25px;
+
+}
+
+.hospital-overview p{
+
+    font-size:18px;
+
+    line-height:1.9;
+
+    color:#555;
+
+    text-align:justify;
+
+}
+
+#readBtn{
+    background:#E91E63;
+    color:#fff;
+    border:none;
+    padding:12px 30px;
+    border-radius:30px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+#readBtn:hover{
+    background:#C2185B;
+}
+/* ================= SERVICES SECTION ================= */
+
+.service-box{
+    background:#FFFFFF;
+    border-radius:20px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:0.4s;
+    height:100%;
+    padding:25px;
+}
+
+.service-box:hover{
+    transform:translateY(-10px);
+    border-color:#E91E63;
+    box-shadow:0 12px 25px rgba(233,30,99,0.20);
+}
+.service-box h5{
+    color:#E91E63;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.service-box p{
+    font-size:15px;
+    color:#555;
+    line-height:1.8;
+}
+/* ================= INFRASTRUCTURE SECTION ================= */
+
+.infra-section{
+    background:#f8f9fa;
+}
+
+.infra-img{
+    height:500px;
+    object-fit:cover;
+    filter: none;
+}
+
+/* Mobile responsive */
+@media(max-width:768px){
+
+    .infra-img{
+        height:250px;
+    }
+
+}
+/* ================= DOCTORS SECTION ================= */
+
+.doctors-section{
+    background:#FFF5F8;
+    padding:80px 0;
+}
+
+.doctor-card{
+    background:#FFFFFF;
+    border:none;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    transition:0.4s;
+}
+
+.doctor-card:hover{
+    transform:translateY(-12px);
+    box-shadow:0 15px 30px rgba(233,30,99,0.20);
+}
+
+.doctor-img{
+    height:340px;
+    object-fit:cover;
+    transition:0.4s;
+}
+.doctor-card:hover .doctor-img{
+    transform:scale(1.05);
+}
+
+.doctor-card .card-title{
+    font-weight:700;
+    color:#E91E63;
+}
+
+@media(max-width:768px){
+
+    .doctor-img{
+        height:260px;
+    }
+
+}
+/* ================= TESTIMONIAL SECTION ================= */
+
+.testimonial-section{
+    background:#f8f9fa;
+}
+
+.testimonial-card{
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    height:100%;
+    transition:0.3s;
+}
+
+.testimonial-card:hover{
+    transform:translateY(-5px);
+}
+
+.testimonial-text{
+    color:#555;
+    line-height:1.8;
+    font-style:italic;
+}
+/* ================= TESTIMONIAL IMAGE ================= */
+
+.testimonial-img{
+    width:80px !important;
+    height:80px !important;
+    border-radius:50% !important;
+    object-fit:cover !important;
+    display:block;
+    margin:0 auto 15px;
+    border:3px solid #E91E63;
+}
+/* FAQ */
+
+.faq-section{
+    background:#f8f9fa;
+}
+
+.accordion-button{
+    font-weight:600;
+}
+
+.accordion-button:not(.collapsed){
+    background:#E91E63;
+    color:#fff;
+}
+/* Contact */
+
+.contact-section{
+    background:#ffffff;
+}
+
+.contact-section h4{
+    color:#E91E63;
+    font-weight:bold;
+}
+
+.contact-section p{
+    font-size:17px;
+    line-height:1.8;
+}
+/* ================= ABOUT HERO ================= */
+
+.about-hero{
+    background:url("../images/about-banner.jpg") center center/cover no-repeat;
+    height:380px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.about-overlay{
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.about-overlay h1{
+    color:#fff;
+    font-size:50px;
+    font-weight:700;
+}
+
+.about-overlay p{
+    color:#fff;
+    font-size:20px;
+    margin-top:15px;
+}
+
+@media(max-width:768px){
+
+.about-hero{
+height:250px;
+}
+
+.about-overlay h1{
+font-size:34px;
+}
+
+.about-overlay p{
+font-size:16px;
+}
+
+}
+
+/* Pink Theme */
+
+.pink-heading{
+    color:#E91E63;
+}
+
+.pink-text{
+    color:#E91E63;
+}
+
+.pink-btn{
+    background:#E91E63;
+    color:#fff;
+    border:none;
+    padding:10px 25px;
+    border-radius:30px;
+    transition:0.3s;
+}
+
+.pink-btn:hover{
+    background:#C2185B;
+    color:#fff;
+}
+
+.pink-outline-btn{
+    border:2px solid #E91E63;
+    color:#E91E63;
+    border-radius:30px;
+}
+
+.pink-outline-btn:hover{
+    background:#E91E63;
+    color:#fff;
+}
+/* Service Card Link */
+.service-link{
+    text-decoration:none;
+    color:inherit;
+    display:block;
+}
+
+.service-link:hover{
+    text-decoration:none;
+    color:inherit;
+}
+
+/* Service Box */
+.service-box{
+    background:#fff;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:0.3s;
+    cursor:pointer;
+
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.service-box:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 30px rgba(233,30,99,0.20);
+}
+
+.service-box img{
+    width:100%;
+    height:280px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+.service-box h5{
+    color:#E91E63;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.service-box p{
+    color:#555;
+    line-height:1.8;
+}
+/* GYNAECOLOGY HERO */
+
+.gyn-hero {
+    background: #E91E63;
+    color: white;
+    padding: 70px 20px;
+}
+
+.gyn-hero h1 {
+    font-size: 42px;
+}
+
+.gyn-hero p {
+    font-size: 18px;
+    margin-top: 15px;
+}
+/* ================= DOCTOR PROFILE PAGE ================= */
+
+.doctor-profile-hero {
+    background: #FFF5F8;
+    padding: 60px 20px;
+}
+
+.doctor-profile-section {
+    background: #ffffff;
+}
+
+.doctor-profile-img {
+    width: 100%;
+    max-width: 380px;
+    height: 430px;
+    object-fit: cover;
+}
+
+.doctor-info p {
+    margin-bottom: 15px;
+}
+
+.doctor-about-box {
+    background: #FFF5F8;
+    padding: 30px;
+    border-radius: 12px;
+    line-height: 1.8;
+}
+
+.doctor-appointment-box {
+    background: #FFF5F8;
+}
+
+.doctor-appointment-box h2 {
+    color: #E91E63;
+}
+
+.doctor-profile-section strong {
+    color: #E91E63;
+}
+
+@media (max-width: 768px) {
+
+    .doctor-profile-img {
+        height: 350px;
+    }
+
+}
