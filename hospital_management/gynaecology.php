@@ -16,55 +16,35 @@
 
 <body>
 
-<!-- ================= HEADER START ================= -->
-
-<header class="header">
-
-    <!-- Logo -->
-    <div class="logo-area">
-        <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital Logo">
-
-        <div class="hospital-name">
-            Lotus Women's Hospital
+<!-- ================= SINGLE NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="brand-logo">
+            <div class="brand-text">
+                <span class="brand-name">Lotus Women's Hospital</span>
+                <span class="brand-tagline">Women's Healthcare</span>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+                <li class="nav-item"><a class="nav-link active" href="index.php#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#contact">Contact</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="nav-btn-emergency" data-bs-toggle="modal" data-bs-target="#emergencyModal">
+                    + Emergency
+                </button>
+                <a href="login.php" class="nav-btn-login">Login</a>
+            </div>
         </div>
     </div>
-
-    <!-- Emergency Button -->
-    <button type="button"
-            class="emergency-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#emergencyModal">
-
-        + Emergency
-
-    </button>
-
-    <!-- Hamburger Menu -->
-    <div class="menu-icon" onclick="toggleMenu()">
-        ☰
-    </div>
-
-</header>
-
-<!-- ================= HEADER END ================= -->
-
-
-<!-- ================= NAVIGATION START ================= -->
-
-<nav class="navbar-custom" id="navbar">
-
-    <a href="index.php">Home</a>
-
-    <a href="about.php">About</a>
-
-    <a href="index.php#services">Services</a>
-
-    <a href="index.php#doctors">Doctors</a>
-
-    <a href="index.php#contact">Contact</a>
-
-    <a href="login.php">Login</a>
-
 </nav>
 
 <!-- ================= NAVIGATION END ================= -->

@@ -18,42 +18,44 @@
 
 <body>
 
-<!-- ================= HEADER START ================= -->
-<header class="header">
+<!-- ================= SINGLE NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+        <!-- Logo + Hospital Name -->
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="brand-logo">
+            <div class="brand-text">
+                <span class="brand-name">Lotus Women's Hospital</span>
+                <span class="brand-tagline">Women's Healthcare</span>
+            </div>
+        </a>
 
-    <!-- Logo -->
-    <div class="logo-area">
-        <img src="assets/images/logo3.jpeg" alt="Hospital Logo">
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div class="hospital-name">
-            Lotus Women's Hospital
+        <!-- Collapsible Nav Links -->
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+
+            <!-- Right Side Buttons -->
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="nav-btn-emergency" data-bs-toggle="modal" data-bs-target="#emergencyModal">
+                    + Emergency
+                </button>
+                <a href="login.php" class="nav-btn-login">Login</a>
+            </div>
         </div>
     </div>
-
-    <!-- Emergency Button -->
-    <button type="button" class="emergency-btn"
-        data-bs-toggle="modal"
-        data-bs-target="#emergencyModal">
-    + Emergency
-</button>
-
-    <!-- Hamburger Menu -->
-    <div class="menu-icon" onclick="toggleMenu()">
-        ☰
-    </div>
-
-</header>
-
-<!-- Navigation -->
-
-<nav class="navbar-custom" id="navbar">
-    <a href="#home">Home</a>
-    <a href="about.php">About</a>
-    <a href="#services">Services</a>
-    <a href="#doctors">Doctors</a>
-    <a href="#contact">Contact</a>
-    <a href="login.php">Login</a>
 </nav>
+
 <!-- Emergency Modal -->
 
 <div class="modal fade" id="emergencyModal">
@@ -109,117 +111,46 @@
 </div>
 <!-- ================= HERO SECTION START ================= -->
 
-<section id="home">
-<div class="container-fluid p-0">
-
-    <!-- Section Heading -->
-    <div class="text-center py-4">
-        <h2 class="fw-bold pink-heading">
-            Obstetrics &amp; Gynaecology Overview
-        </h2>
-        <p class="text-muted">
-            Caring for Women with Compassion, Excellence and Advanced Healthcare
-        </p>
-    </div>
-
-    <!-- Hero Slider -->
-    <div id="heroSlider" class="carousel slide carousel-fade"
-         data-bs-ride="carousel"
-         data-bs-interval="4000">
-
-        <!-- Indicators -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="2"></button>
+<section id="home" class="hero-video-section">
+    <div class="container-fluid p-0">
+        <div class="video-wrapper">
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="assets/images/hospital_video.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay">
+                <div class="video-caption">
+                    <h1 class="mh" id="maskedHeading">
+                        <span class="mh__measure">
+                            <span class="mh__word" data-i="0">Lotus</span>
+                            <span class="mh__word" data-i="1">Women's</span>
+                            <span class="mh__word" data-i="2">Hospital</span>
+                        </span>
+                        <svg class="mh__svg" aria-hidden="true">
+                            <defs>
+                                <clipPath id="mhClip" clipPathUnits="userSpaceOnUse">
+                                    <text class="mh__glyph" data-i="0">Lotus</text>
+                                    <text class="mh__glyph" data-i="1">Women's</text>
+                                    <text class="mh__glyph" data-i="2">Hospital</text>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        <span class="mh__reveal">
+                            <span class="mh__clip" style="clip-path:url(#mhClip)">
+                                <span class="mh__media">
+                                    <video class="mh__source" src="assets/images/hospital_video.mp4" autoplay muted loop playsinline></video>
+                                </span>
+                            </span>
+                        </span>
+                    </h1>
+                    <p class="typing-text" id="typingText"></p>
+                </div>
+            </div>
         </div>
-
-        <!-- Slides -->
-        <div class="carousel-inner">
-
-            <!-- Slide 1 -->
-            <div class="carousel-item active">
-                <img src="assets/images/banner1.jpeg" class="d-block w-100 hero-img" alt="Banner 1">
-
-                <div class="carousel-caption">
-                    <h1>Lotus Women's Hospital</h1>
-
-                    <p>
-                        Dedicated to providing exceptional maternity,
-                        pregnancy and women's healthcare with compassion,
-                        safety and excellence.
-                    </p>
-
-                    <a href="#" class="btn pink-btn btn-lg">
-                        Book Appointment
-                    </a>
-                </div>
-            </div>
-
-            <!-- Slide 2 -->
-            <div class="carousel-item">
-                <img src="assets/images/banner2.jpeg" class="d-block w-100 hero-img" alt="Banner 2">
-
-                <div class="carousel-caption">
-                    <h1>Expert Obstetrics &amp; Gynaecology Care</h1>
-
-                    <p>
-                        Experienced specialists delivering personalized care
-                        for every stage of a woman's life.
-                    </p>
-
-                    <a href="#" class="btn btn-danger btn-lg">
-                        Book Appointment
-                    </a>
-                </div>
-            </div>
-
-            <!-- Slide 3 -->
-            <div class="carousel-item">
-                <img src="assets/images/banner3.jpeg" class="d-block w-100 hero-img" alt="Banner 3">
-
-                <div class="carousel-caption">
-                    <h1>Your Journey to Motherhood Begins Here</h1>
-
-                    <p>
-                        Advanced facilities, expert doctors and compassionate
-                        care for mothers and newborns.
-                    </p>
-
-                    <a href="#" class="btn btn-danger btn-lg">
-                        Book Appointment
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Previous -->
-        <button class="carousel-control-prev"
-                type="button"
-                data-bs-target="#heroSlider"
-                data-bs-slide="prev">
-
-            <span class="carousel-control-prev-icon"></span>
-
-        </button>
-
-        <!-- Next -->
-        <button class="carousel-control-next"
-                type="button"
-                data-bs-target="#heroSlider"
-                data-bs-slide="next">
-
-            <span class="carousel-control-next-icon"></span>
-
-        </button>
-
     </div>
-
-</div>
 </section>
+
 <!-- ================= HERO SECTION END ================= -->
- <!-- ================= HOSPITAL OVERVIEW ================= -->
+<!-- ================= HOSPITAL OVERVIEW ================= -->
 
 <section id="about" class="hospital-overview py-5">
     <div class="container">
@@ -263,23 +194,19 @@
 
         </div>
 
-      <div class="text-center mt-4">
-
-    <button id="readBtn"
-            class="btn pink-outline-btn"
-            onclick="toggleReadMore()">
-
-        Read More
-
-    </button>
-
-</div>
+        <div class="text-center mt-4">
+            <button id="readBtn"
+                class="btn pink-outline-btn"
+                onclick="toggleReadMore()">
+                Read More
+            </button>
+        </div>
 
     </div>
 </section>
 <!-- ================= SERVICES SECTION START ================= -->
 
-<section id="services"class="services-section py-5">
+<section id="services" class="services-section py-5">
 
     <div class="container">
 
@@ -346,16 +273,16 @@
             <!-- Content -->
             <div class="col-md-7">
 
-                <h4 class="pink-hading fw-bold mb-3">
+                <h4 class="pink-heading fw-bold mb-3">
                     Laparoscopic and Hysteroscopic Surgeries
                 </h4>
-                    <p>
-                       <strong>Lotus Women’s Hospital</strong> is proud to be one of the leading centres 
-                       providing advanced laparoscopic and hysteroscopic surgical care for women.
-                        We offer minimally invasive gynecological procedures with modern technology
-                         and highly skilled surgical expertise, ensuring safe and 
-                         effective treatment with faster recovery.
-                    </p>
+                <p>
+                    <strong>Lotus Women's Hospital</strong> is proud to be one of the leading centres
+                    providing advanced laparoscopic and hysteroscopic surgical care for women.
+                    We offer minimally invasive gynecological procedures with modern technology
+                    and highly skilled surgical expertise, ensuring safe and
+                    effective treatment with faster recovery.
+                </p>
 
                 <div id="moreServices" style="display:none;">
 
@@ -389,14 +316,14 @@
 </section>
 
 <!-- ================= SERVICES SECTION END ================= -->
- <!-- ================= INFRASTRUCTURE SECTION ================= -->
+<!-- ================= INFRASTRUCTURE SECTION ================= -->
 
 <section class="infra-section py-5">
 
     <div class="container">
 
         <div class="text-center mb-5">
-            <h2 class="fw-bold  pink-heading">
+            <h2 class="fw-bold pink-heading">
                 Our Infrastructure
             </h2>
 
@@ -405,69 +332,57 @@
             </p>
         </div>
 
-        <!-- Infrastructure Slider Starts Here -->
+        <!-- Infrastructure Slider -->
+        <div id="infraSlider" class="carousel slide carousel-fade"
+             data-bs-ride="carousel"
+             data-bs-interval="3000">
 
-        <!-- Your Carousel Code -->
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="3"></button>
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="4"></button>
+                <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="5"></button>
+            </div>
+
+            <!-- Slides -->
+            <div class="carousel-inner rounded shadow">
+                <div class="carousel-item active">
+                    <img src="assets/images/infra1.jpeg" class="d-block w-100 infra-img" alt="Infra 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/images/infra2.jpeg" class="d-block w-100 infra-img" alt="Infra 2">
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/images/infra3.jpeg" class="d-block w-100 infra-img" alt="Infra 3">
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/images/infra4.jpeg" class="d-block w-100 infra-img" alt="Infra 4">
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/images/infra5.jpeg" class="d-block w-100 infra-img" alt="Infra 5">
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/images/infra6.jpeg" class="d-block w-100 infra-img" alt="Infra 6">
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#infraSlider" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#infraSlider" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+        </div>
 
     </div>
 
 </section>
- <!-- Slider -->
-<div id="infraSlider" class="carousel slide carousel-fade"
-     data-bs-ride="carousel"
-     data-bs-interval="3000">
 
-    <!-- Indicators (6 dots) -->
-    <div class="carousel-indicators">
-
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="2"></button>
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="3"></button>
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="4"></button>
-        <button type="button" data-bs-target="#infraSlider" data-bs-slide-to="5"></button>
-
-    </div>
-
-    <!-- Slides -->
-    <div class="carousel-inner rounded shadow">
-
-        <div class="carousel-item active">
-            <img src="assets/images/infra1.jpeg" class="d-block w-100 infra-img" alt="Infra 1">
-        </div>
-
-        <div class="carousel-item">
-            <img src="assets/images/infra2.jpeg" class="d-block w-100 infra-img" alt="Infra 2">
-        </div>
-
-        <div class="carousel-item">
-            <img src="assets/images/infra3.jpeg" class="d-block w-100 infra-img" alt="Infra 3">
-        </div>
-
-        <div class="carousel-item">
-            <img src="assets/images/infra4.jpeg" class="d-block w-100 infra-img" alt="Infra 4">
-        </div>
-
-        <div class="carousel-item">
-            <img src="assets/images/infra5.jpeg" class="d-block w-100 infra-img" alt="Infra 5">
-        </div>
-
-        <div class="carousel-item">
-            <img src="assets/images/infra6.jpeg" class="d-block w-100 infra-img" alt="Infra 6">
-        </div>
-
-    </div>
-
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#infraSlider" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-
-    <button class="carousel-control-next" type="button" data-bs-target="#infraSlider" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-
-</div>
 <!-- ================= DOCTORS SECTION START ================= -->
 
 <section id="doctors" class="doctors-section py-5">
@@ -536,7 +451,7 @@
                         </p>
 
                         <p class="text-muted">
-                                     MBBS, MS 
+                            MBBS, MS 
                         </p>
 
                         <a href="doctor2.php" class="btn pink-btn">
@@ -585,7 +500,7 @@
 </section>
 
 <!-- ================= DOCTORS SECTION END ================= -->
- <!-- ================= TESTIMONIAL SECTION START ================= -->
+<!-- ================= TESTIMONIAL SECTION START ================= -->
 
 <section class="testimonial-section py-5">
 
@@ -607,8 +522,8 @@
             <div class="col-md-4">
                 <div class="testimonial-card">
                     <img src="assets/images/doctor1.jpeg"
-                    class="testimonial-img"
-                     alt="Dr. priya sharma ">
+                        class="testimonial-img"
+                        alt="Dr. priya sharma">
                     
 
                     <p class="testimonial-text">
@@ -646,12 +561,8 @@
             <div class="col-md-4">
                 <div class="testimonial-card">
                     <img src="assets/images/doctor3.jpeg"
-                    class="testimonial-img"
-                     class=/* Testimonial Image */
-    
-
-
-     alt="Dr. kavya rani">
+                        class="testimonial-img"
+                        alt="Dr. kavya rani">
 
                     <p class="testimonial-text">
                         "I highly recommend Lotus Women's Hospital for its modern infrastructure, compassionate healthcare professionals, and excellent maternity services."
@@ -672,158 +583,231 @@
 </section>
 
 <!-- ================= TESTIMONIAL SECTION END ================= -->
+
+<!-- ================= BENEFITS OF OBSTETRICS ================= -->
+
+<section class="benefits-section py-5">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <!-- Image Side -->
+            <div class="col-lg-6">
+                <div class="benefits-img-wrapper">
+                    <img src="assets/images/Gyn-4.png"
+                         class="img-fluid rounded-4 shadow"
+                         alt="Obstetrics Care">
+                </div>
+            </div>
+
+            <!-- Content Side -->
+            <div class="col-lg-6">
+                <h2 class="benefits-title fw-bold mb-4">
+                    Benefits of Obstetrics
+                </h2>
+
+                <ul class="benefits-list">
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Pregnancy care (routine check-ups, ultrasounds, and prenatal screenings)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Safe childbirth (normal delivery, cesarean section, and labour management)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>High-risk pregnancy management (gestational diabetes, preeclampsia, twin pregnancies)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Fetal monitoring (tracking baby's growth, heartbeat, and development)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Postpartum care (physical recovery, breastfeeding support, emotional well-being)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Emergency care (handling complications like premature labour or bleeding)</span>
+                    </li>
+
+                    <li>
+                        <span class="benefit-icon">&#10003;</span>
+                        <span>Parental education and counselling (nutrition, birth preparation, newborn care)</span>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= BENEFITS END ================= -->
+
  <!-- ================= FAQ SECTION ================= -->
 
 <section class="faq-section py-5">
 
-<div class="container">
+    <div class="container">
 
-<div class="text-center mb-5">
-<h2 class="fw-bold text-primary">
-Frequently Asked Questions
-</h2>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary">
+                Frequently Asked Questions
+            </h2>
 
-<p class="text-muted">
-Find answers to common questions about our services.
-</p>
-</div>
+            <p class="text-muted">
+                Find answers to common questions about our services.
+            </p>
+        </div>
 
-<div class="accordion" id="faqAccordion">
+        <div class="accordion" id="faqAccordion">
 
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button" type="button"
-data-bs-toggle="collapse"
-data-bs-target="#faq1">
-Do you provide maternity care?
-</button>
-</h2>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#faq1">
+                        Do you provide maternity care?
+                    </button>
+                </h2>
 
-<div id="faq1" class="accordion-collapse collapse show"
-data-bs-parent="#faqAccordion">
-<div class="accordion-body">
-Yes. We provide complete pregnancy care, delivery, and postnatal services.
-</div>
-</div>
-</div>
+                <div id="faq1" class="accordion-collapse collapse show"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. We provide complete pregnancy care, delivery, and postnatal services.
+                    </div>
+                </div>
+            </div>
 
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed"
-type="button"
-data-bs-toggle="collapse"
-data-bs-target="#faq2">
-Is fertility treatment available?
-</button>
-</h2>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#faq2">
+                        Is fertility treatment available?
+                    </button>
+                </h2>
 
-<div id="faq2" class="accordion-collapse collapse"
-data-bs-parent="#faqAccordion">
-<div class="accordion-body">
-Yes. We offer fertility consultation, diagnosis, and treatment.
-</div>
-</div>
-</div>
+                <div id="faq2" class="accordion-collapse collapse"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. We offer fertility consultation, diagnosis, and treatment.
+                    </div>
+                </div>
+            </div>
 
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed"
-type="button"
-data-bs-toggle="collapse"
-data-bs-target="#faq3">
-Do you perform laparoscopic surgeries?
-</button>
-</h2>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#faq3">
+                        Do you perform laparoscopic surgeries?
+                    </button>
+                </h2>
 
-<div id="faq3" class="accordion-collapse collapse"
-data-bs-parent="#faqAccordion">
-<div class="accordion-body">
-Yes. Our specialists perform advanced laparoscopic and hysteroscopic procedures.
-</div>
-</div>
-</div>
+                <div id="faq3" class="accordion-collapse collapse"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. Our specialists perform advanced laparoscopic and hysteroscopic procedures.
+                    </div>
+                </div>
+            </div>
 
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed"
-type="button"
-data-bs-toggle="collapse"
-data-bs-target="#faq4">
-Can I book an appointment online?
-</button>
-</h2>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#faq4">
+                        Can I book an appointment online?
+                    </button>
+                </h2>
 
-<div id="faq4" class="accordion-collapse collapse"
-data-bs-parent="#faqAccordion">
-<div class="accordion-body">
-Yes. You can easily book your appointment through our website.
-</div>
-</div>
-</div>
+                <div id="faq4" class="accordion-collapse collapse"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. You can easily book your appointment through our website.
+                    </div>
+                </div>
+            </div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </section>
 <!-- ================= CONTACT SECTION ================= -->
 
 <section id="contact" class="contact-section py-5">
 
-<div class="container">
+    <div class="container">
 
-<div class="text-center mb-5">
-<h2 class="fw-bold text-primary">
-Contact Us
-</h2>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary">
+                Contact Us
+            </h2>
 
-<p class="text-muted">
-We're here to help you 24×7.
-</p>
-</div>
+            <p class="text-muted">
+                We're here to help you 24x7.
+            </p>
+        </div>
 
-<div class="row">
+        <div class="row">
 
-<div class="col-md-6">
+            <div class="col-md-6">
 
-<h4>Lotus Women's Hospital</h4>
+                <h4>Lotus Women's Hospital</h4>
 
-<p>
-📍 25, Main Road,<br>
-Panruti,<br>
-Cuddalore District,<br>
-Tamil Nadu - 607106
-</p>
+                <p>
+                    25, Main Road,<br>
+                    Panruti,<br>
+                    Cuddalore District,<br>
+                    Tamil Nadu - 607106
+                </p>
 
-<p>
-📞 +91 9876543210
-</p>
+                <p>
+                    +91 9876543210
+                </p>
 
-<p>
-✉ info@lotushospital.com
-</p>
+                <p>
+                    info@lotushospital.com
+                </p>
 
-<p>
-🕒 Open 24 Hours
-</p>
+                <p>
+                    Open 24 Hours
+                </p>
 
-</div>
+            </div>
 
-<div class="col-md-6">
+            <div class="col-md-6">
 
-<iframe
-src="https://www.google.com/maps?q=Panruti,Tamil+Nadu&output=embed"
-width="100%"
-height="300"
-style="border:0;"
-loading="lazy">
-</iframe>
+                <iframe
+                    src="https://www.google.com/maps?q=Panruti,Tamil+Nadu&output=embed"
+                    width="100%"
+                    height="300"
+                    style="border:0;"
+                    loading="lazy">
+                </iframe>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </section>
 

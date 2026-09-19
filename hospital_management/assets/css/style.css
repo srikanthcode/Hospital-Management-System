@@ -6,342 +6,353 @@ body{
     background: #FFF5F8;
     color: #4a4a4a;
 }
+/* ================= PROFESSIONAL NAVBAR ================= */
 
-/* HEADER */
-.header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    background:#FFFFFF;
-
-    padding:18px 40px;
-
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-
-    border-bottom:4px solid #E91E63;
-
-    position:sticky;
-
-    top:0;
-
-    z-index:1000;
-
+.main-navbar {
+    background: linear-gradient(135deg, #fff 0%, #fff5f8 100%);
+    padding: 6px 0;
+    box-shadow: 0 2px 20px rgba(233,30,99,0.10);
+    border-bottom: 3px solid #E91E63;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
 }
 
-/* Logo */
-
-.logo-area{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-}
-
-.logo-area img{
-
-    height:70px;
-    border-radius: 50%;
-
-}
-
-.hospital-name{
-
-    font-size:30px;
-
-    font-weight:700;
-
-    color:#E91E63;
-
-    letter-spacing: 1px;
-
-}
-
-/* Emergency */
-.emergency-btn{
-    background:#D32F2F;
-    color:#fff;
-    border:2px solid #d32F2F;
-    padding:12px 28px;
-    border-radius:30px;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.emergency-btn:hover{
-    background:#b71C1C;
-    border-color:#b71C1C;
-}
-
-.emergency-btn:focus,
-.emergency-btn:active{
-    background:#dc3545;
-    color:#fff;
-    border-color:#dc3545;
-    outline:none;
-    box-shadow:none;
-}
-/* NABH */
-
-.nabh-logo img{
-
-    height:60px;
-
-}
-
-/* Menu */
-
-.menu-icon{
-
-    font-size:32px;
-
-    cursor:pointer;
-
-    display:none;
-
-}
-
-/* Navigation */
-
-.navbar-custom{
-
-    background:linear-gradient(90deg, #E91E63, #F8BBD0);
+.main-navbar .navbar-brand {
     display: flex;
-    justify-content:flex-end;
-    text-align:center;
-    gap:10px;
-    padding:12px 40px; 
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
 }
 
-   
-
-.navbar-custom a{
-
-    color:white;
-
-    text-decoration:none;
-
-    display:inline-block;
-
-    padding:10px 18px;
-
-    font-weight:600;
-
+.main-navbar .brand-logo {
+    height: 70px;
+    width: auto;
     border-radius: 8px;
-
-    transition:0.3s;
-
+    object-fit: contain;
+    transition: transform 0.3s ease;
 }
 
-.navbar-custom a:hover{
-
-    background: #C2185B;
-    color: #fff;
-    border-radius: 6px;
-    transition: 0.3s;
-
+.main-navbar .brand-logo:hover {
+    transform: scale(1.05);
 }
 
-/* Mobile */
-
-@media(max-width:768px){
-
-.menu-icon{
-
-display:block;
-
+.main-navbar .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
 }
 
-.navbar-custom{
-
-display:none;
-
-}
-
-.navbar-custom.active{
-
-display:block;
-
-}
-
-.navbar-custom a{
-
-display:block;
-
-border-top:1px solid rgba(255,255,255,.2);
-
-}
-
-.hospital-name{
-
-font-size:18px;
-
-}
-
-.logo-area img{
-
-height:50px;
-
-}
-
-.nabh-logo img{
-
-height:45px;
-
-}
-
-}
-/* ================= HERO BANNER ================= */
-
-#heroSlider {
-    position: relative;
-}
-
-.hero-img {
-    width: 100%;
-    height: 700px;
-    object-fit: cover;
-    filter:none;
-}
-
-/* Dark Overlay */
-.carousel-item::before {
-    content: none;
-    position: absolute;
-    inset: 0;
-    background:linear-gradient(
-        rgba(233,30,99,0.35),
-        rgba(248,187,208,0.35)
-        );
-    z-index: 1;
-}
-
-/* Caption */
-.carousel-caption {
-    z-index: 2;
-    bottom: 50%;
-    transform: translateY(50%);
-    text-align: center;
-}
-
-.carousel-caption h1 {
-    font-size: 60px;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
-}
-
-.carousel-caption p {
+.main-navbar .brand-name {
     font-size: 22px;
-    color: #F8FFF8;
-    max-width: 750px;
-    margin: 0 auto 25px;
-    line-height: 1.8;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+    font-weight: 800;
+    color: #E91E63;
+    letter-spacing: 0.3px;
+    font-family: 'Georgia', serif;
 }
 
-/* Book Appointment Button */
-.carousel-caption .btn {
-    padding: 12px 32px;
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 30px;
-}
-.carousel-caption .btn{
-    background:#E91E63;
-    color:#fff;
-    border:none;
-    padding:14px 35px;
-    border-radius:40px;
-    font-size:18px;
-    font-weight:600;
-    transition:0.3s;
+.main-navbar .brand-tagline {
+    font-size: 11px;
+    color: #888;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: none;
 }
 
-.carousel-caption .btn:hover{
-    background:#C2185B;
-    transform:scale(1.05);
+.main-navbar .navbar-nav .nav-item {
+    margin: 0 2px;
 }
 
-/* Previous & Next Buttons */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-size: 60%;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background-color: rgba(0,0,0,0.5);
-    padding: 20px;
+.main-navbar .nav-link {
+    color: #444 !important;
+    font-weight: 500;
+    padding: 6px 10px !important;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    position: relative;
+    background: transparent !important;
 }
 
-/* Dot Indicators */
-.carousel-indicators button {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin: 0 6px;
+.main-navbar .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #E91E63;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
 }
 
-.carousel-indicators .active {
-    background-color: #dc3545;
+.main-navbar .nav-link:hover::after,
+.main-navbar .nav-link.active::after {
+    width: 60%;
 }
 
-/* Heading Above Slider */
-.hero-heading {
-    padding: 30px 15px;
-    text-align: center;
-    background: #ffffff;
+.main-navbar .nav-link:hover {
+    color: #E91E63 !important;
+    background: transparent !important;
 }
 
-.hero-heading h2 {
-    color: #0d6efd;
-    font-size: 2rem;
+.main-navbar .nav-link.active {
+    color: #E91E63 !important;
+    background: transparent !important;
     font-weight: 700;
 }
 
-.hero-heading p {
-    color: #666;
-    font-size: 1.1rem;
-    margin-top: 10px;
+.nav-btn-emergency {
+    background: linear-gradient(135deg, #D32F2F, #B71C1C);
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(211,47,47,0.3);
+    letter-spacing: 0.3px;
 }
 
-/* Mobile Responsive */
-@media (max-width:768px){
+.nav-btn-emergency:hover {
+    background: linear-gradient(135deg, #B71C1C, #8B0000);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(211,47,47,0.45);
+}
 
-    .hero-img{
-        height:420px;
+.nav-btn-login {
+    background: linear-gradient(135deg, #E91E63, #C2185B);
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(233,30,99,0.3);
+    letter-spacing: 0.3px;
+}
+
+.nav-btn-login:hover {
+    background: linear-gradient(135deg, #C2185B, #AD1457);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233,30,99,0.45);
+}
+
+.main-navbar .navbar-toggler {
+    border: 2px solid #E91E63;
+    padding: 8px 12px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.main-navbar .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(233,30,99,0.25);
+}
+
+.main-navbar .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='%23E91E63' stroke-width='2.5' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Mobile Navbar */
+@media (max-width: 991px) {
+    .main-navbar {
+        padding: 6px 0;
     }
 
-    .carousel-caption{
-        bottom:35%;
+    .main-navbar .brand-logo {
+        height: 50px;
     }
 
-    .carousel-caption h1{
-        font-size:2rem;
+    .main-navbar .brand-name {
+        font-size: 17px;
     }
 
-    .carousel-caption p{
-        font-size:1rem;
+    .main-navbar .brand-tagline {
+        font-size: 9px;
     }
 
-    .carousel-caption .btn{
-        padding:10px 24px;
-        font-size:16px;
+    .main-navbar .navbar-collapse {
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(233,30,99,0.12);
+        margin-top: 12px;
+        border: 1px solid #fce4ec;
     }
 
-    .hero-heading h2{
-        font-size:1.6rem;
+    .main-navbar .navbar-nav .nav-link {
+        padding: 10px 15px !important;
+        border-radius: 0;
+        margin-bottom: 0;
+        border-bottom: 1px solid #f5f5f5;
     }
 
+    .main-navbar .navbar-nav .nav-link.active {
+        margin-bottom: 0;
+    }
+
+    .main-navbar .d-flex {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #fce4ec;
+        justify-content: center;
+        gap: 12px !important;
+    }
+}
+
+/* Legacy support - hide old elements if present */
+.header { display: none; }
+.menu-icon { display: none; }
+.nabh-logo { display: none; }
+.navbar-custom { display: none; }
+.emergency-btn { display: none; }
+/* ================= HERO VIDEO SECTION ================= */
+
+.hero-video-section {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.40);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-caption {
+    text-align: center;
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* Masked Heading */
+.mh {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(28px, 4.5vw, 54px);
+    font-weight: 800;
+    font-family: 'Georgia', serif;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    -webkit-font-smoothing: antialiased;
+}
+
+.mh__measure {
+    color: transparent;
+    display: block;
+}
+
+.mh__word {
+    display: inline-block;
+    white-space: pre;
+}
+
+.mh__word:not(:last-child)::after {
+    content: ' ';
+}
+
+.mh__svg {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.mh__reveal {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+}
+
+.mh__clip {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.mh__media {
+    position: absolute;
+    inset: 0;
+    display: block;
+    will-change: transform, filter;
+}
+
+.mh__source {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+}
+
+/* Typing Text Effect */
+.typing-text {
+    font-size: clamp(15px, 2vw, 20px);
+    font-weight: 400;
+    margin: 20px 0 0 0;
+    min-height: 30px;
+    text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #fff;
+    margin-left: 3px;
+    vertical-align: text-bottom;
+    animation: blink 0.6s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .video-wrapper {
+        height: 50vh;
+        min-height: 350px;
+    }
+
+    .typing-text {
+        font-size: clamp(12px, 3.5vw, 15px);
+    }
 }
 /* ================= HOSPITAL OVERVIEW ================= */
 
@@ -511,6 +522,90 @@ height:45px;
     margin:0 auto 15px;
     border:3px solid #E91E63;
 }
+
+/* ================= BENEFITS SECTION ================= */
+
+.benefits-section {
+    background: #fff;
+    padding: 80px 0;
+}
+
+.benefits-img-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.benefits-img-wrapper img {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.benefits-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #222;
+    font-family: 'Georgia', serif;
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.benefits-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.benefits-list li:last-child {
+    border-bottom: none;
+}
+
+.benefit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    background: #E91E63;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 1px;
+}
+
+@media (max-width: 991px) {
+    .benefits-img-wrapper img {
+        height: 350px;
+    }
+
+    .benefits-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .benefits-img-wrapper img {
+        height: 280px;
+    }
+
+    .benefits-list li {
+        font-size: 12px;
+    }
+}
+
 /* FAQ */
 
 .faq-section{
@@ -525,6 +620,168 @@ height:45px;
     background:#E91E63;
     color:#fff;
 }
+/* ================= LOGIN PAGE ================= */
+
+.login-container {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff5f8 0%, #fce4ec 100%);
+    padding: 40px 20px;
+}
+
+.login-box {
+    background: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(233, 30, 99, 0.12);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid #fce4ec;
+}
+
+.login-box h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #E91E63;
+    margin-bottom: 8px;
+    font-family: 'Georgia', serif;
+}
+
+.login-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.login-box .form-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    text-align: left;
+    display: block;
+}
+
+.login-box .form-control {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.login-box .form-control:focus {
+    border-color: #E91E63;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+}
+
+.login-box .pink-btn {
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.login-links {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.login-links a {
+    color: #E91E63;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+    color: #C2185B;
+}
+
+.register-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.register-text {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.register-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-register {
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.btn-patient {
+    color: #E91E63;
+    border-color: #E91E63;
+    background: transparent;
+}
+
+.btn-patient:hover {
+    background: #E91E63;
+    color: #fff;
+}
+
+.btn-doctor {
+    color: #2196F3;
+    border-color: #2196F3;
+    background: transparent;
+}
+
+.btn-doctor:hover {
+    background: #2196F3;
+    color: #fff;
+}
+
+.btn-nurse {
+    color: #4CAF50;
+    border-color: #4CAF50;
+    background: transparent;
+}
+
+.btn-nurse:hover {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.footer {
+    background: #222;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+}
+
+@media (max-width: 576px) {
+    .login-box {
+        padding: 30px 25px;
+    }
+
+    .login-box h2 {
+        font-size: 24px;
+    }
+}
+
 /* Contact */
 
 .contact-section{

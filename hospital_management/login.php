@@ -30,10 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: admin_dashboard.php");
                 exit();
             } elseif ($user["role"] == "doctor") {
-                header("Location: doctor_dashboard.php");
+                header("Location: doctor/dashboard.php");
+                exit();
+            } elseif ($user["role"] == "nurse") {
+                header("Location: nurse/dashboard.php");
                 exit();
             } else {
-                header("Location: patient_dashboard.php");
+                header("Location: patient/dashboard.php");
                 exit();
             }
 
@@ -62,16 +65,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-<header class="hospital-header">
-    <div class="logo-area">
-        <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital Logo">
-
-        <div>
-            <h1>Lotus Women's Hospital</h1>
-            <p>Gynecology & Pediatrics Management System</p>
+<nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="brand-logo">
+            <div class="brand-text">
+                <span class="brand-name">Lotus Women's Hospital</span>
+                <span class="brand-tagline">Women's Healthcare</span>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#contact">Contact</a></li>
+            </ul>
         </div>
     </div>
-</header>
+</nav>
 
 <div class="login-container">
 
@@ -85,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php if ($message != "") { ?>
             <div class="alert alert-danger">
-                <?php echo $message; ?>
+                <?php echo htmlspecialchars($message); ?>
             </div>
         <?php } ?>
 
@@ -121,6 +137,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="login-links">
             <a href="index.php">← Back to Home</a>
+        </div>
+
+        <div class="register-section">
+            <p class="register-text">Don't have an account?</p>
+            <div class="register-buttons">
+                <a href="patient_register.php" class="btn btn-register btn-patient">Register as Patient</a>
+                <a href="doctor_register.php" class="btn btn-register btn-doctor">Register as Doctor</a>
+                <a href="nurse_register.php" class="btn btn-register btn-nurse">Register as Nurse</a>
+            </div>
         </div>
 
     </div>

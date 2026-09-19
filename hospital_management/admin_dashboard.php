@@ -1,116 +1,83 @@
 <?php
 session_start();
-include"db.php";
+include "db.php";
 
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
     header("Location: login.php");
     exit();
 }
+
+// Initial stats (will be updated by JS)
+$doctor_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM doctors"))['total'] ?? 0;
+$patient_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM patients"))['total'] ?? 0;
+$appointment_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM appointments"))['total'] ?? 0;
+$bed_available = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM beds WHERE status='Available'"))['total'] ?? 0;
+$emergency_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM emergency_records WHERE status='Active'"))['total'] ?? 0;
+
+$page_title = "Admin Dashboard";
+$active = "admin_home";
+$base = "./";
+include "includes/layout.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Dashboard - Lotus Women's Hospital</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-
-<body>
-
-<header class="hospital-header">
-    <div class="logo-area">
-        <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital Logo">
-
-        <div>
-            <h1>Lotus Women's Hospital</h1>
-            <p>Gynecology & Pediatrics Management System</p>
-        </div>
+<div class="row g-3">
+  <div class="col-md">
+    <div class="stat-card text-center">
+      <h6>Doctors</h6>
+      <h2 id="statDoctors"><?php echo $doctor_count; ?></h2>
     </div>
-</header>
-
-<div class="container py-5">
-
-    <div class="text-center">
-        <h2>Admin Dashboard</h2>
-
-        <p>
-            Welcome, <?php echo htmlspecialchars($_SESSION["name"]); ?>!
-        </p>
+  </div>
+  <div class="col-md">
+    <div class="stat-card text-center">
+      <h6>Patients</h6>
+      <h2 id="statPatients"><?php echo $patient_count; ?></h2>
     </div>
-
-    <div class="row g-4 mt-4">
-
-       <?php
-       $doctor_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM doctors");
-       $doctor_data = mysqli_fetch_assoc($doctor_query);
-       $doctor_count = $doctor_data["total"];
-       ?>
-       
-       <div class="col-md-4">
-               <div class="card p-4 text-center">
-                <h4>Doctors</h4>
-                <h2><?php echo $doctor_count; ?></h2>
-                <p>Total Registered Doctors</p>
-                <a href="manage_doctors.php" class="btn pink-btn">
-                    Manage Doctors
-                </a>
-               </div>
-       </div>
-        <?php
-        $patient_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM patients");
-        $patient_data = mysqli_fetch_assoc($patient_query);
-        $patient_count = $patient_data["total"];
-        ?>
-        <div class="col-md-4">
-            <div class="card p-4 text-center">
-                <h4>Patients</h4>
-                <h2><?php echo $patient_count; ?></h2>
-                 <p>Total Registered Patients</p>
-                 <a href="manage_patients.php" class="btn pink-btn">
-                    Manage Patients
-                </a>
-            </div>
-        </div>
-        <?php
-        $appointment_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM appointments");
-        $appointment_data = mysqli_fetch_assoc($appointment_query);
-        $appointment_count = $appointment_data["total"];
-        ?>
-        <div class="col-md-4">
-            <div class="card p-4 text-center">
-                <h4>Appointments</h4>
-                 <h2><?php echo $appointment_count; ?></h2>
-                 <p>Total Appointments</p>
-                 <a href="manage_appointments.php" class="btn pink-btn">
-                     Manage Appointments
-                </a>
-            </div>
-        </div>
-
+  </div>
+  <div class="col-md">
+    <div class="stat-card text-center">
+      <h6>Appointments</h6>
+      <h2 id="statAppointments"><?php echo $appointment_count; ?></h2>
     </div>
-    <div class="text-center mt-5">
-
-    <a href="index.php" class="btn pink-btn me-2">
-        Back to Home
-    </a>
-
-    <a href="logout.php" class="btn btn-danger">
-        Logout
-    </a>
+  </div>
+  <div class="col-md">
+    <div class="stat-card text-center">
+      <h6>Available Beds</h6>
+      <h2 id="statBeds"><?php echo $bed_available; ?></h2>
     </div>
-
-   
+  </div>
+  <div class="col-md">
+    <div class="stat-card text-center">
+      <h6>Active Emergencies</h6>
+      <h2 id="statEmergencies" class="text-danger"><?php echo $emergency_count; ?></h2>
+    </div>
+  </div>
 </div>
 
-<footer class="footer">
-    <p>© 2026 Lotus Women's Hospital. All Rights Reserved.</p>
-</footer>
+<div class="row g-4 mt-3">
+  <!-- Today's Appointments -->
+  <div class="col-lg-7">
+    <div class="card p-4">
+      <h5 class="mb-3">Today's Appointments</h5>
+      <div id="todayAppointments">
+        <div class="text-center text-muted p-3">Loading...</div>
+      </div>
+    </div>
+  </div>
 
-</body>
-</html>
+  <!-- Activity Timeline -->
+  <div class="col-lg-5">
+    <div class="card p-4">
+      <h5 class="mb-3">Recent Activity</h5>
+      <div class="activity-section" id="activityTimeline">
+        <div class="text-center text-muted p-3">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4">
+  <a href="index.php" class="btn pink-btn me-2">Back to Home</a>
+  <a href="logout.php" class="btn btn-danger">Logout</a>
+</div>
+
+<?php include "includes/layout_footer.php"; ?>

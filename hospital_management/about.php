@@ -18,42 +18,32 @@
 
 <body>
 
-<!-- ================= HEADER ================= -->
-
-<header class="header">
-
-    <div class="logo-area">
-        <img src="assets/images/logo2.jpeg" alt="Hospital Logo">
-
-        <div class="hospital-name">
-            Lotus Women's Hospital
+<!-- ================= SINGLE NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo2.jpeg" alt="Lotus Women's Hospital" class="brand-logo">
+            <div class="brand-text">
+                <span class="brand-name">Lotus Women's Hospital</span>
+                <span class="brand-tagline">Women's Healthcare</span>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="about.php">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#contact">Contact</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <a href="login.php" class="nav-btn-login">Login</a>
+            </div>
         </div>
     </div>
-
-    <button type="button"
-            class="emergency-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#emergencyModal">
-        + Emergency
-    </button>
-
-    <div class="menu-icon" onclick="toggleMenu()">
-        ☰
-    </div>
-
-</header>
-
-<!-- Navigation -->
-
-<nav class="navbar-custom" id="navbar">
-
-    <a href="index.php">Home</a>
-    <a href="about.php" class="active">About</a>
-    <a href="index.php#services">Services</a>
-    <a href="index.php#doctors">Doctors</a>
-    <a href="index.php#contact">Contact</a>
-    <a href="login.php">Login</a>
-
 </nav>
 
 <!-- ================= ABOUT BANNER ================= -->
@@ -443,7 +433,7 @@
 
                     <img src="assets/images/values.jpeg"
                          class="img-fluid rounded"
-                         alt=" Values">
+                         alt="Values">
 
                 </div>
 
@@ -451,7 +441,7 @@
                 <div class="col-lg-7">
 
                     <h2 class="text-success fw-bold mb-3">
-                         Values
+                        Values
                     </h2>
 
                     <div class="mb-3">
@@ -539,7 +529,7 @@
             We are committed to providing compassionate and comprehensive healthcare for every woman.
         </p>
 
-        <a href="appointment.php" class="btn btn-danger btn-lg mt-3">
+        <a href="patient/book_appointment.php" class="btn btn-danger btn-lg mt-3">
             Book an Appointment
         </a>
 
