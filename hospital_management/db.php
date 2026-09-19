@@ -37,3 +37,35 @@ if (!$conn) {
 }
 
 mysqli_set_charset($conn, 'utf8mb4');
+
+// ── Auto-install: create tables on first run ──────────────────────
+$check = @$conn->query("SHOW TABLES LIKE 'users'");
+if ($check && $check->num_rows === 0) {
+
+    $schema_files = [
+        __DIR__ . '/install/schema.sql',
+        __DIR__ . '/install/realtime_schema.sql',
+    ];
+
+    foreach ($schema_files as $file) {
+        if (!file_exists($file)) continue;
+
+        $sql = file_get_contents($file);
+
+        // Strip statements that assume a specific database name —
+        // we are already connected to the correct database.
+        $sql = preg_replace('/CREATE\s+DATABASE\s+IF\s+NOT\s+EXISTS\s+[^;]+;/', '', $sql);
+        $sql = preg_replace('/USE\s+`?[a-zA-Z_]+`?\s*;/', '', $sql);
+
+        // Remove -- and /* */ comments, then split by semicolons.
+        $sql       = preg_replace('/--.*$/m', '', $sql);
+        $sql       = preg_replace('/\/\*.*?\*\//s', '', $sql);
+        $statements = array_filter(array_map('trim', explode(';', $sql)));
+
+        foreach ($statements as $stmt) {
+            if (!empty($stmt)) {
+                @$conn->query($stmt);
+            }
+        }
+    }
+}

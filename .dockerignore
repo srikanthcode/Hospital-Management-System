@@ -1,8 +1,6 @@
 .git
 .gitignore
 .kilo/
-hospital_management/install/
-hospital_management/*.sql
 hospital_management/Lotus_Women_Hospital_marketing_v*_20260918092604_gwr_video_mvp.mp4
 hospital_management/reset_admin.php
 *.md
