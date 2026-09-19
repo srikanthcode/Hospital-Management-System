@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
         mysqli pdo pdo_mysql gd zip intl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# MariaDB config (skip DNS, use socket)
+COPY mariadb.cnf /etc/mysql/mariadb.conf.d/99-docker.cnf
+
 # Apache config
 RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT /var/www/html
@@ -21,15 +24,12 @@ RUN sed -ri 's/AllowOverride None/AllowOverride All/g' \
 # Copy application
 COPY hospital_management/ /var/www/html/
 
-# Copy startup script
+# Startup script
 COPY docker-start.sh /usr/local/bin/docker-start.sh
 RUN chmod +x /usr/local/bin/docker-start.sh
 
-# Create directory for MariaDB data persistence within the container
+# MariaDB runtime dirs
 RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
-
-# Writable uploads directory
-RUN mkdir -p /var/www/html/uploads && chown www-data:www-data /var/www/html/uploads
 
 EXPOSE 80
 
