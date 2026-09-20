@@ -1,42 +1,42 @@
 <?php
-$conn = @mysqli_connect("localhost", "root", "");
-if (!$conn) { die("Cannot connect to MySQL. Start MySQL in XAMPP."); }
+/**
+ * Manual install / admin-reset tool (PostgreSQL).
+ *
+ * Normally the schema is created automatically by db.php on first use, so you
+ * do not need to run this. Use it to force a fresh install or to reset the
+ * admin password:
+ *
+ *     php install/install.php        # from CLI
+ *     php install/install.php Web    # optional custom admin password
+ *
+ * It reuses the connection settings resolved by db.php (DATABASE_URL / PG* env
+ * vars, falling back to the Render database configured there).
+ */
 
-mysqli_report(MYSQLI_REPORT_OFF);
-
-mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS hospital_management DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-mysqli_select_db($conn, "hospital_management");
-
-$sql = file_get_contents(__DIR__ . '/schema.sql');
-$rt = file_get_contents(__DIR__ . '/realtime_schema.sql');
-if ($sql === false) { die("Cannot read schema.sql"); }
-$sql .= "\n" . ($rt ?: '');
-
-$lines = explode("\n", $sql);
-$cleaned = [];
-foreach ($lines as $line) {
-    $trimmed = trim($line);
-    if ($trimmed === '' || strpos($trimmed, '--') === 0) continue;
-    $cleaned[] = $line;
-}
-$sql = implode("\n", $cleaned);
-
-$statements = array_filter(array_map('trim', explode(';', $sql)));
-$count = 0;
-foreach ($statements as $stmt) {
-    $stmt = trim($stmt);
-    if ($stmt === '') continue;
-    if (stripos($stmt, 'CREATE DATABASE') === 0) continue;
-    if (stripos($stmt, 'USE ') === 0) continue;
-    @mysqli_query($conn, $stmt);
-    $count++;
+// Force db.php to re-check / re-create the schema instead of trusting the
+// per-instance "schema already exists" marker.
+$marker = sys_get_temp_dir() . '/lotus_pg_schema_ok';
+if (is_file($marker)) {
+    @unlink($marker);
 }
 
-$pwd = password_hash("Admin@123", PASSWORD_DEFAULT);
-$stmt = mysqli_prepare($conn, "INSERT INTO users (name,email,password,role) VALUES (?,?,?,?) AS u ON DUPLICATE KEY UPDATE password=u.password, role='admin'");
-$name = "Administrator"; $email = "admin@lotushospital.com"; $role = "admin";
-mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $pwd, $role);
+// Connects and bootstraps the schema if needed.
+require __DIR__ . '/../db.php';
+
+$admin_name  = 'Administrator';
+$admin_email = 'admin@lotushospital.com';
+$admin_pass  = $argv[1] ?? 'Admin@123';
+$admin_role  = 'admin';
+
+$hash = password_hash($admin_pass, PASSWORD_DEFAULT);
+$stmt = mysqli_prepare($conn, "INSERT INTO users (name,email,password,role) VALUES (?,?,?,?)
+    ON CONFLICT (email) DO UPDATE SET password=EXCLUDED.password, role=EXCLUDED.role");
+mysqli_stmt_bind_param($stmt, "ssss", $admin_name, $admin_email, $hash, $admin_role);
 mysqli_stmt_execute($stmt);
 
-echo "Install complete! $count SQL statements executed.\n";
-echo "Admin login: admin@lotushospital.com / Admin@123\n";
+echo "Install complete.\n";
+echo "Schema: users, doctors, patients, nurses, services, appointments,\n";
+echo "        medical_records, follow_ups, wards, beds, admissions,\n";
+echo "        ambulance_services, emergency_records, salary_records,\n";
+echo "        notifications, activity_logs\n";
+echo "Admin login: {$admin_email} / {$admin_pass}\n";

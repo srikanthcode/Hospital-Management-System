@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $r = mysqli_query($conn, "SELECT status FROM beds WHERE id = $bed_id");
             $bed = mysqli_fetch_assoc($r);
             if ($bed && $bed['status'] === 'Available') {
-                $stmt = mysqli_prepare($conn, "INSERT INTO admissions (patient_id, bed_id, doctor_id, reason, admission_date, status) VALUES (?,?,?,?,NOW(),'Admitted')");
+                $stmt = mysqli_prepare($conn, "INSERT INTO admissions (patient_id, bed_id, doctor_id, reason, admission_date, status) VALUES (?,?,?,?,CURRENT_TIMESTAMP,'Admitted')");
                 mysqli_stmt_bind_param($stmt,"iiis",$patient_id,$bed_id,$doctor_id,$reason);
                 if (mysqli_stmt_execute($stmt)) {
                     $stmt = mysqli_prepare($conn, "UPDATE beds SET status='Occupied' WHERE id=?");
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $r = mysqli_query($conn, "SELECT bed_id FROM admissions WHERE id=$adm_id");
         $a = mysqli_fetch_assoc($r);
         if ($a) {
-            $stmt = mysqli_prepare($conn, "UPDATE admissions SET status='Discharged', discharge_date=NOW() WHERE id=?");
+            $stmt = mysqli_prepare($conn, "UPDATE admissions SET status='Discharged', discharge_date=CURRENT_TIMESTAMP WHERE id=?");
             mysqli_stmt_bind_param($stmt,"i",$adm_id);
             mysqli_stmt_execute($stmt);
             if ($a['bed_id']) {

@@ -17,11 +17,11 @@ if ($date_from) { $df = mysqli_real_escape_string($conn,$date_from); $where .= "
 if ($date_to) { $dt = mysqli_real_escape_string($conn,$date_to); $where .= " AND a.appointment_date <= '$dt'"; }
 
 if ($filter === 'daily') {
-    $where .= " AND a.appointment_date = CURDATE()";
+    $where .= " AND a.appointment_date = CURRENT_DATE";
 } elseif ($filter === 'weekly') {
-    $where .= " AND a.appointment_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+    $where .= " AND a.appointment_date >= CURRENT_DATE - INTERVAL '7 days'";
 } elseif ($filter === 'monthly') {
-    $where .= " AND a.appointment_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+    $where .= " AND a.appointment_date >= CURRENT_DATE - INTERVAL '30 days'";
 }
 
 $result = mysqli_query($conn, "SELECT a.*, p.name AS patient_name, d.name AS doctor_name, s.name AS service_name

@@ -37,7 +37,7 @@ try {
         mysqli_stmt_execute($stmt);
         $stats['my_patients'] = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['c'];
 
-        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS c FROM appointments WHERE doctor_id=? AND appointment_date=CURDATE()");
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS c FROM appointments WHERE doctor_id=? AND appointment_date=CURRENT_DATE");
         mysqli_stmt_bind_param($stmt, "i", $doctor_id);
         mysqli_stmt_execute($stmt);
         $stats['today_appointments'] = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['c'];
@@ -77,7 +77,7 @@ try {
         $stmt = mysqli_prepare($conn, "SELECT a.appointment_date AS date, a.appointment_time AS time, d.name AS doctor_name, a.status
             FROM appointments a
             JOIN doctors d ON d.id = a.doctor_id
-            WHERE a.patient_id=? AND a.appointment_date >= CURDATE() AND a.status != 'Cancelled'
+            WHERE a.patient_id=? AND a.appointment_date >= CURRENT_DATE AND a.status != 'Cancelled'
             ORDER BY a.appointment_date ASC, a.appointment_time ASC LIMIT 1");
         mysqli_stmt_bind_param($stmt, "i", $patient_id);
         mysqli_stmt_execute($stmt);

@@ -1,16 +1,15 @@
 FROM php:8.3-apache
 
-# Install MariaDB server + PHP extensions
+# libpq (PostgreSQL client lib) + PHP extensions.
+# mysqli/mysql are intentionally NOT installed: the app talks to PostgreSQL
+# through the PDO pdo_pgsql driver via includes/mysqli_compat.php.
 RUN apt-get update && apt-get install -y \
-        mariadb-server \
+        libpq-dev \
         libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-        mysqli pdo pdo_mysql gd zip intl \
+        pdo pdo_pgsql gd zip intl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# MariaDB config (skip DNS, use socket)
-COPY mariadb.cnf /etc/mysql/mariadb.conf.d/99-docker.cnf
 
 # Apache config
 RUN a2enmod rewrite
@@ -24,13 +23,6 @@ RUN sed -ri 's/AllowOverride None/AllowOverride All/g' \
 # Copy application
 COPY hospital_management/ /var/www/html/
 
-# Startup script
-COPY docker-start.sh /usr/local/bin/docker-start.sh
-RUN chmod +x /usr/local/bin/docker-start.sh
-
-# MariaDB runtime dirs
-RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
-
 EXPOSE 80
 
-ENTRYPOINT ["/usr/local/bin/docker-start.sh"]
+CMD ["apache2-foreground"]

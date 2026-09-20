@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'pay') {
         $id = (int)($_POST['id'] ?? 0);
-        $stmt = mysqli_prepare($conn, "UPDATE salary_records SET payment_status='Paid', payment_date=CURDATE() WHERE id=?");
+        $stmt = mysqli_prepare($conn, "UPDATE salary_records SET
+            payment_status='Paid', payment_date=CURRENT_DATE WHERE id=?");
         mysqli_stmt_bind_param($stmt,"i",$id);
         mysqli_stmt_execute($stmt);
         flash_set('success','Marked as Paid.');

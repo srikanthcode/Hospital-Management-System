@@ -6,7 +6,7 @@ include "../db.php";
 $search = $_GET['search'] ?? '';
 
 $where = "1=1";
-if ($search) { $s = mysqli_real_escape_string($conn,$search); $where .= " AND (d.name LIKE '%$s%' OR d.specialization LIKE '%$s%')"; }
+if ($search) { $s = mysqli_real_escape_string($conn,$search); $where .= " AND (d.name ILIKE '%$s%' OR d.specialization ILIKE '%$s%')"; }
 
 $result = mysqli_query($conn, "SELECT d.*,
     (SELECT COUNT(DISTINCT a.patient_id) FROM appointments a WHERE a.doctor_id = d.id) AS patient_count,

@@ -35,7 +35,7 @@ $filter_date = $_GET['date'] ?? '';
 $where = "1=1";
 if ($search) {
     $s = mysqli_real_escape_string($conn, $search);
-    $where .= " AND (p.name LIKE '%$s%' OR d.name LIKE '%$s%')";
+    $where .= " AND (p.name ILIKE '%$s%' OR d.name ILIKE '%$s%')";
 }
 if ($filter_status) {
     $fs = mysqli_real_escape_string($conn, $filter_status);

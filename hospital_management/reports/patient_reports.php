@@ -8,7 +8,7 @@ $search = $_GET['search'] ?? '';
 $where = "1=1";
 if ($search) {
     $s = mysqli_real_escape_string($conn, $search);
-    $where .= " AND (p.name LIKE '%$s%' OR p.phone LIKE '%$s%' OR p.email LIKE '%$s%')";
+    $where .= " AND (p.name ILIKE '%$s%' OR p.phone ILIKE '%$s%' OR p.email ILIKE '%$s%')";
 }
 
 $result = mysqli_query($conn, "SELECT p.*,

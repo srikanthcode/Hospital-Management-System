@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = $_GET['search'] ?? '';
 if ($search) {
     $searchEsc = mysqli_real_escape_string($conn, $search);
-    $result = mysqli_query($conn, "SELECT * FROM patients WHERE name LIKE '%$searchEsc%' OR phone LIKE '%$searchEsc%' OR email LIKE '%$searchEsc%' ORDER BY id DESC");
+    $result = mysqli_query($conn, "SELECT * FROM patients WHERE name ILIKE '%$searchEsc%' OR phone ILIKE '%$searchEsc%' OR email ILIKE '%$searchEsc%' ORDER BY id DESC");
 } else {
     $result = mysqli_query($conn, "SELECT * FROM patients ORDER BY id DESC");
 }

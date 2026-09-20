@@ -6,7 +6,7 @@ include "../db.php";
 $search = $_GET['search'] ?? '';
 
 $where = "1=1";
-if ($search) { $s = mysqli_real_escape_string($conn,$search); $where .= " AND (n.name LIKE '%$s%' OR n.department LIKE '%$s%' OR n.shift LIKE '%$s%')"; }
+if ($search) { $s = mysqli_real_escape_string($conn,$search); $where .= " AND (n.name ILIKE '%$s%' OR n.department ILIKE '%$s%' OR n.shift ILIKE '%$s%')"; }
 
 $result = mysqli_query($conn, "SELECT n.* FROM nurses n WHERE $where ORDER BY n.id DESC");
 
