@@ -16,14 +16,13 @@
 require_once __DIR__ . '/includes/mysqli_compat.php';
 
 /**
- * Resolve the PostgreSQL connection settings from environment variables only.
- * No credentials are stored in this repository.
+ * Resolve the PostgreSQL connection settings.
  *
- * Preferred: set DATABASE_URL (or POSTGRES_URL) on the Render web service to the
- * database's Internal Database URL, e.g.
+ * Set DATABASE_URL (or POSTGRES_URL) on the Render web service's Environment
+ * tab to the database's Internal Database URL to override the defaults below:
  *     postgresql://user:pass@dpg-xxx-a/hospital_e8tc
- * Alternatively set the individual PGHOST / PGPORT / PGDATABASE / PGUSER /
- * PGPASSWORD variables.
+ * Individual PGHOST / PGPORT / PGDATABASE / PGUSER / PGPASSWORD variables are
+ * also honoured.
  */
 function pg_connection_config()
 {
@@ -44,21 +43,24 @@ function pg_connection_config()
 
     if (getenv('PGHOST') !== false || getenv('PGDATABASE') !== false || getenv('PGUSER') !== false) {
         return [
-            'host'    => getenv('PGHOST')     !== false ? getenv('PGHOST')     : 'localhost',
+            'host'    => getenv('PGHOST')     !== false ? getenv('PGHOST')     : 'dpg-dansemek1f9s739q0bjg-a.oregon-postgres.render.com',
             'port'    => (int)(getenv('PGPORT') !== false ? getenv('PGPORT') : 5432),
-            'db'      => getenv('PGDATABASE') !== false ? getenv('PGDATABASE') : 'hospital_management',
-            'user'    => getenv('PGUSER')     !== false ? getenv('PGUSER')     : 'hospital',
-            'pass'    => getenv('PGPASSWORD') !== false ? getenv('PGPASSWORD') : '',
+            'db'      => getenv('PGDATABASE') !== false ? getenv('PGDATABASE') : 'hospital_e8tc',
+            'user'    => getenv('PGUSER')     !== false ? getenv('PGUSER')     : 'hospital_e8tc_user',
+            'pass'    => getenv('PGPASSWORD') !== false ? getenv('PGPASSWORD') : 'BLNx6kOfBIfkVABWagIeGy4Z2w6nNuBy',
             'sslmode' => getenv('PGSSLMODE')  !== false ? getenv('PGSSLMODE')  : 'require',
         ];
     }
 
-    http_response_code(503);
-    header('Content-Type: text/plain');
-    die("Database is not configured.\n"
-        . "Set DATABASE_URL (the Internal Database URL from your Render PostgreSQL)\n"
-        . "in the Environment tab of this Render web service, then redeploy.\n"
-        . "See: https://render.com/docs/databases#connecting");
+    // Render defaults — works with no environment configuration.
+    return [
+        'host'    => 'dpg-dansemek1f9s739q0bjg-a.oregon-postgres.render.com',
+        'port'    => 5432,
+        'db'      => 'hospital_e8tc',
+        'user'    => 'hospital_e8tc_user',
+        'pass'    => 'BLNx6kOfBIfkVABWagIeGy4Z2w6nNuBy',
+        'sslmode' => 'require',
+    ];
 }
 
 /**
