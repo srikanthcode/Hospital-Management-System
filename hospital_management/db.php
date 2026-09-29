@@ -29,6 +29,10 @@ if ($isLocal) {
     if (!$conn) { http_response_code(503); die("DB connection failed."); }
 }
 
+// Make sure the demo logins always exist in whatever database is in use.
+$demo_db_key = $isLocal ? 'hospital_db' : (getenv('PGDATABASE') ?: 'hospital_e8tc');
+seed_demo_accounts($conn, $demo_db_key);
+
 function mysql_bootstrap($conn) {
     $marker = sys_get_temp_dir() . '/lotus_mysql_ok';
     if (is_file($marker)) return;
@@ -38,4 +42,82 @@ function mysql_bootstrap($conn) {
         if ($stmt !== '' && !preg_match('/^--/', $stmt)) @mysqli_query($conn, $stmt);
     }
     @file_put_contents($marker, '1');
+}
+
+function seed_demo_accounts($conn, $db_key) {
+    $marker = sys_get_temp_dir() . '/lotus_demo_' . preg_replace('/[^A-Za-z0-9_]/', '_', $db_key);
+    if (is_file($marker)) return;
+
+    $demo = [
+        ['Administrator', 'admin@lotushospital.com',   'Admin@123',   'admin'],
+        ['Demo Patient',  'patient@lotushospital.com', 'Patient@123', 'patient'],
+        ['Demo Doctor',   'doctor@lotushospital.com',  'Doctor@123',  'doctor'],
+        ['Demo Nurse',    'nurse@lotushospital.com',   'Nurse@123',   'nurse'],
+    ];
+
+    $in_list = [];
+    foreach ($demo as $d) { $in_list[] = "'" . $d[1] . "'"; }
+
+    $res = @mysqli_query($conn, "SELECT id, lower(email) AS email FROM users WHERE lower(email) IN (" . implode(',', $in_list) . ")");
+    if (!$res) return; // schema not ready yet - retry on the next request
+
+    $have = [];
+    while ($row = mysqli_fetch_assoc($res)) { $have[$row['email']] = (int)$row['id']; }
+
+    $done = true;
+    foreach ($demo as $d) {
+        list($name, $email, $password, $role) = $d;
+
+        if (isset($have[$email])) {
+            $uid = $have[$email];
+        } else {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = @mysqli_prepare($conn, "INSERT INTO users (name,email,password,role) VALUES (?,?,?,?)");
+            if (!$stmt) { $done = false; continue; }
+            mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hash, $role);
+            if (!@mysqli_stmt_execute($stmt)) { $done = false; continue; }
+
+            $uid = (int)mysqli_insert_id($conn);
+            if (!$uid) {
+                $q = @mysqli_query($conn, "SELECT id FROM users WHERE lower(email) = lower('" . $email . "') LIMIT 1");
+                $r = $q ? mysqli_fetch_assoc($q) : null;
+                $uid = $r ? (int)$r['id'] : 0;
+            }
+            $have[$email] = $uid;
+        }
+
+        if ($uid) seed_demo_profile($conn, $role, $uid, $name);
+    }
+
+    if ($done) @file_put_contents($marker, '1');
+}
+
+function seed_demo_profile($conn, $role, $uid, $name) {
+    $uid = (int)$uid;
+
+    if ($role === 'patient') {
+        $r = @mysqli_query($conn, "SELECT id FROM patients WHERE user_id = $uid LIMIT 1");
+        if ($r && mysqli_fetch_assoc($r)) return;
+        $stmt = @mysqli_prepare($conn, "INSERT INTO patients (user_id,name,age,gender,phone,email,address) VALUES (?,?,'30','Female','+91 9000000000',?,'')");
+        if (!$stmt) return;
+        $email = 'patient@lotushospital.com';
+        mysqli_stmt_bind_param($stmt, "iss", $uid, $name, $email);
+        mysqli_stmt_execute($stmt);
+    } elseif ($role === 'doctor') {
+        $r = @mysqli_query($conn, "SELECT id FROM doctors WHERE user_id = $uid LIMIT 1");
+        if ($r && mysqli_fetch_assoc($r)) return;
+        $stmt = @mysqli_prepare($conn, "INSERT INTO doctors (user_id,name,specialization,qualification,experience,phone,email,department,address) VALUES (?,?,'Obstetrics & Gynaecology','MBBS, MD','10 Years','+91 9000000001',?,'Gynaecology','')");
+        if (!$stmt) return;
+        $email = 'doctor@lotushospital.com';
+        mysqli_stmt_bind_param($stmt, "iss", $uid, $name, $email);
+        mysqli_stmt_execute($stmt);
+    } elseif ($role === 'nurse') {
+        $r = @mysqli_query($conn, "SELECT id FROM nurses WHERE user_id = $uid LIMIT 1");
+        if ($r && mysqli_fetch_assoc($r)) return;
+        $stmt = @mysqli_prepare($conn, "INSERT INTO nurses (user_id,name,phone,email,shift,department,address) VALUES (?,?,'+91 9000000002',?,'Morning','Maternity Ward','')");
+        if (!$stmt) return;
+        $email = 'nurse@lotushospital.com';
+        mysqli_stmt_bind_param($stmt, "iss", $uid, $name, $email);
+        mysqli_stmt_execute($stmt);
+    }
 }
