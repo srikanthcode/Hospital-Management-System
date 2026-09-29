@@ -1,5 +1,5 @@
 <?php
-mysqli_report(MYSQLI_REPORT_OFF);
+if (function_exists('mysqli_report')) mysqli_report(MYSQLI_REPORT_OFF);
 $isLocal = !getenv('DATABASE_URL') && !getenv('PGHOST');
 
 if (!$isLocal) require_once __DIR__ . '/includes/mysqli_compat.php';
