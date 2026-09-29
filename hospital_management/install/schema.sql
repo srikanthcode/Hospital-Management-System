@@ -78,6 +78,9 @@ CREATE TABLE IF NOT EXISTS services (
   name VARCHAR(150) NOT NULL,
   category VARCHAR(100) DEFAULT NULL,
   description TEXT,
+  price NUMERIC(10,2) DEFAULT NULL,
+  duration_minutes INT DEFAULT NULL,
+  is_active SMALLINT DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -107,10 +110,13 @@ CREATE TABLE IF NOT EXISTS medical_records (
   id SERIAL PRIMARY KEY,
   patient_id INT NOT NULL,
   doctor_id INT DEFAULT NULL,
+  appointment_id INT DEFAULT NULL,
   diagnosis TEXT,
   treatment TEXT,
   prescription TEXT,
+  notes TEXT,
   record_date DATE DEFAULT NULL,
+  follow_up_date DATE DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_mr_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
   CONSTRAINT fk_mr_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE SET NULL

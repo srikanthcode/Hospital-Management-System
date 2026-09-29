@@ -32,12 +32,12 @@ try {
         SELECT COUNT(*) AS c FROM medical_records WHERE patient_id=$patient_id"))['c'] ?? 0;
 
     $stmt = mysqli_prepare($conn, "
-        SELECT mr.id, mr.appointment_id, mr.diagnosis, mr.prescription, mr.notes,
-               mr.follow_up_date, mr.created_at,
+        SELECT mr.id, mr.appointment_id, mr.diagnosis, mr.treatment, mr.prescription,
+               mr.notes, mr.record_date, mr.follow_up_date, mr.created_at,
                d.name AS doctor_name, a.appointment_date, a.appointment_time
         FROM medical_records mr
-        JOIN appointments a ON a.id = mr.appointment_id
-        JOIN doctors d ON d.id = a.doctor_id
+        LEFT JOIN appointments a ON a.id = mr.appointment_id
+        LEFT JOIN doctors d ON d.id = COALESCE(mr.doctor_id, a.doctor_id)
         WHERE mr.patient_id=?
         ORDER BY mr.created_at DESC
         LIMIT ? OFFSET ?");

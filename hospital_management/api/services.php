@@ -8,7 +8,7 @@ include '../db.php';
 require_once '../includes/api_helper.php';
 
 $user = api_require_auth();
-api_require_roles(['admin']);
+api_require_roles(['admin', 'patient', 'doctor', 'nurse']);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     api_json(['error' => 'Method not allowed'], 405);

@@ -140,7 +140,89 @@ include "../includes/layout.php";
   </div>
 </div>
 
-<!-- Patient Issues/Complaints Section -->
+<!-- Live Patient Bookings -->
+<div class="row g-4 mt-3">
+  <div class="col-12">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Patient Bookings <span class="badge bg-success">Live</span></h5>
+        <a href="appointments.php" class="btn btn-sm btn-outline-primary">View All</a>
+      </div>
+      <div id="bookingsAlert" class="d-none"></div>
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Patient</th>
+              <th>Service</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="liveBookings">
+            <tr><td colspan="8" class="text-center">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <small class="text-muted mt-2 d-block">Refreshes every 5 seconds - new patient bookings appear here automatically.</small>
+    </div>
+  </div>
+</div>
+
+<!-- Digital Prescription Modal -->
+<div class="modal fade" id="prescribeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Digital Prescription</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="rxAlert" class="d-none"></div>
+        <input type="hidden" id="rxAppointmentId">
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <label class="form-label">Patient</label>
+            <input class="form-control" id="rxPatient" readonly>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Appointment</label>
+            <input class="form-control" id="rxSlot" readonly>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Diagnosis *</label>
+          <textarea class="form-control" id="rxDiagnosis" rows="2" placeholder="e.g. Gestational hypertension, stage 1"></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Prescription / Medicines *</label>
+          <textarea class="form-control" id="rxPrescription" rows="3" placeholder="e.g. Tab. Nifedipine 10mg - 1-0-1 after food (7 days)"></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Treatment / Advice</label>
+          <textarea class="form-control" id="rxTreatment" rows="2" placeholder="Rest, BP monitoring twice daily..."></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" id="rxNotes" rows="2" placeholder="Additional instructions"></textarea>
+        </div>
+        <div class="mb-1">
+          <label class="form-label">Follow-up date</label>
+          <input type="date" class="form-control" id="rxFollowUp">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn pink-btn" id="rxSaveBtn">Save &amp; Send to Patient</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row g-4 mt-3">
   <div class="col-12">
     <div class="card p-4">
@@ -274,6 +356,132 @@ include "../includes/layout.php";
     } else {
         setInterval(loadIssues, 15000);
     }
+
+    // ----- Live patient bookings + digital prescription -----
+    let bookingsSig = '';
+    let lastBookings = [];
+
+    function bookingSortKey(a) { return (a.appointment_date || '') + ' ' + (a.appointment_time || ''); }
+
+    function renderBookings(list) {
+        const tbody = document.getElementById('liveBookings');
+        if (!tbody) return;
+        const sig = JSON.stringify(list.map(b => [b.id, b.status, b.patient_name, b.appointment_date, b.appointment_time]));
+        if (sig === bookingsSig) return;
+        const firstLoad = bookingsSig === '';
+        bookingsSig = sig;
+
+        if (!list || list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No bookings yet - new bookings appear here automatically.</td></tr>';
+            return;
+        }
+
+        const badge = { Pending: 'warning', Confirmed: 'success', Completed: 'secondary', Cancelled: 'danger' };
+        let html = '';
+        list.forEach(a => {
+            const st = a.status || 'Pending';
+            let actions = '';
+            if (st === 'Pending') actions += `<button class="btn btn-sm btn-success me-1" data-act="Confirmed" data-id="${a.id}">Confirm</button>`;
+            if (st === 'Confirmed') actions += `<button class="btn btn-sm btn-primary me-1" data-act="Completed" data-id="${a.id}">Complete</button>`;
+            if (st !== 'Cancelled') actions += `<button class="btn btn-sm btn-outline-danger me-1" data-act="Cancelled" data-id="${a.id}">Cancel</button>`;
+            if (st !== 'Cancelled') actions += `<button class="btn btn-sm pink-btn" data-prescribe="${a.id}">Prescribe</button>`;
+
+            html += `<tr${(firstLoad || st !== 'Pending') ? '' : ' class="table-warning"'}>
+                <td>${Realtime.esc(a.id)}</td>
+                <td>${Realtime.esc(a.appointment_date)}</td>
+                <td>${a.appointment_time ? Realtime.formatTime(a.appointment_time) : '-'}</td>
+                <td>${Realtime.esc(a.patient_name)}</td>
+                <td>${Realtime.esc(a.service_name || '-')}</td>
+                <td>${Realtime.esc(a.notes || '')}</td>
+                <td><span class="badge bg-${badge[st] || 'secondary'}">${Realtime.esc(st)}</span></td>
+                <td>${actions}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+        lastBookings = list;
+    }
+
+    function loadBookings() {
+        fetch('../api/appointments.php?limit=30', { credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => { if (d && !d.error) renderBookings(d.appointments || []); })
+            .catch(() => {});
+    }
+
+    loadBookings();
+    Realtime.startPolling('doctor_live_bookings', '../api/appointments.php?limit=30',
+        (d) => { if (d && !d.error) renderBookings(d.appointments || []); }, 5000);
+
+    function showBookingAlert(type, msg) {
+        const el = document.getElementById('bookingsAlert');
+        if (!el) return;
+        el.className = 'alert alert-' + type + ' py-2';
+        el.textContent = msg;
+        setTimeout(() => { el.className = 'd-none'; }, 5000);
+    }
+
+    document.addEventListener('click', function(e) {
+        const statusBtn = e.target.closest('[data-act]');
+        if (statusBtn) {
+            const id = statusBtn.dataset.id, act = statusBtn.dataset.act;
+            statusBtn.disabled = true;
+            Realtime.postForm('../api/appointments.php', { action: 'update_status', appointment_id: id, status: act })
+                .then(res => {
+                    showBookingAlert(res && res.success ? 'success' : 'danger',
+                        res && res.message ? res.message : (res && res.error ? res.error : 'Update failed'));
+                    loadBookings();
+                });
+            return;
+        }
+
+        const rxBtn = e.target.closest('[data-prescribe]');
+        if (rxBtn) {
+            const appt = lastBookings.find(b => String(b.id) === String(rxBtn.dataset.prescribe));
+            if (!appt) return;
+            document.getElementById('rxAppointmentId').value = appt.id;
+            document.getElementById('rxPatient').value = appt.patient_name || '';
+            document.getElementById('rxSlot').value = (appt.appointment_date || '') + ' ' + (appt.appointment_time || '');
+            ['rxDiagnosis', 'rxPrescription', 'rxTreatment', 'rxNotes', 'rxFollowUp'].forEach(id => document.getElementById(id).value = '');
+            const al = document.getElementById('rxAlert'); al.className = 'd-none';
+            new bootstrap.Modal(document.getElementById('prescribeModal')).show();
+        }
+    });
+
+    document.getElementById('rxSaveBtn').addEventListener('click', async function() {
+        const btn = this;
+        const al = document.getElementById('rxAlert');
+        const params = {
+            action: 'create_prescription',
+            appointment_id: document.getElementById('rxAppointmentId').value,
+            diagnosis: document.getElementById('rxDiagnosis').value.trim(),
+            prescription: document.getElementById('rxPrescription').value.trim(),
+            treatment: document.getElementById('rxTreatment').value.trim(),
+            notes: document.getElementById('rxNotes').value.trim(),
+            follow_up_date: document.getElementById('rxFollowUp').value
+        };
+        if (!params.diagnosis && !params.prescription) {
+            al.className = 'alert alert-danger py-2';
+            al.textContent = 'Enter a diagnosis or prescription.';
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        const res = await Realtime.postForm('../api/doctor_medical_records.php', params);
+        btn.disabled = false;
+        btn.innerHTML = 'Save &amp; Send to Patient';
+        if (res && res.success) {
+            al.className = 'alert alert-success py-2';
+            al.textContent = res.message;
+            loadBookings();
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('prescribeModal')).hide();
+                showBookingAlert('success', 'Prescription sent to the patient.');
+            }, 700);
+        } else {
+            al.className = 'alert alert-danger py-2';
+            al.textContent = (res && res.error) ? res.error : 'Could not save the prescription.';
+        }
+    });
 })();
 </script>
 

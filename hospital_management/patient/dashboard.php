@@ -70,6 +70,14 @@ include "../includes/layout.php";
         <div class="text-center text-muted p-3">Loading...</div>
       </div>
     </div>
+
+    <!-- Live prescriptions from the doctor -->
+    <div class="card p-4 mt-3">
+      <h5 class="mb-3">My Prescriptions <span class="badge bg-success">Live</span></h5>
+      <div id="livePrescriptions">
+        <div class="text-center text-muted p-3">Loading...</div>
+      </div>
+    </div>
   </div>
 
   <div class="col-lg-5">
@@ -82,5 +90,44 @@ include "../includes/layout.php";
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+    function renderPrescriptions(records) {
+        const box = document.getElementById('livePrescriptions');
+        if (!box) return;
+        if (!records || records.length === 0) {
+            box.innerHTML = '<div class="text-center text-muted p-3">No prescriptions yet.</div>';
+            return;
+        }
+        let html = '';
+        records.slice(0, 4).forEach(r => {
+            const date = r.record_date || (r.created_at ? new Date(r.created_at).toLocaleDateString() : '-');
+            html += `
+            <div class="border rounded p-2 mb-2">
+              <div class="d-flex justify-content-between">
+                <strong>${Realtime.esc(r.diagnosis || 'Prescription')}</strong>
+                <small class="text-muted">${Realtime.esc(date)}</small>
+              </div>
+              <div class="small">${Realtime.esc(r.doctor_name ? 'Dr. ' + r.doctor_name : '')}</div>
+              <div class="small text-muted">${Realtime.esc(r.prescription || r.treatment || '')}</div>
+              ${r.follow_up_date ? '<div class="small text-danger">Follow-up: ' + Realtime.esc(r.follow_up_date) + '</div>' : ''}
+            </div>`;
+        });
+        box.innerHTML = html;
+    }
+
+    function loadPrescriptions() {
+        fetch('../api/patient_medical_records.php?limit=4', { credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => { if (d && !d.error) renderPrescriptions(d.records); })
+            .catch(() => {});
+    }
+
+    loadPrescriptions();
+    Realtime.startPolling('patient_live_rx', '../api/patient_medical_records.php?limit=4',
+        (d) => { if (d && !d.error) renderPrescriptions(d.records); }, 5000);
+})();
+</script>
 
 <?php include "../includes/layout_footer.php"; ?>

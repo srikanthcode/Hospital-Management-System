@@ -32,6 +32,37 @@ if ($isLocal) {
 // Make sure the demo logins always exist in whatever database is in use.
 $demo_db_key = $isLocal ? 'hospital_db' : (getenv('PGDATABASE') ?: 'hospital_e8tc');
 seed_demo_accounts($conn, $demo_db_key);
+ensure_appointment_schema($conn, $demo_db_key);
+
+/**
+ * Columns added for the booking / digital-prescription flow. Older installs
+ * (and the Render PostgreSQL database) may pre-date them, so add whatever is
+ * missing once per database.
+ */
+function ensure_appointment_schema($conn, $db_key) {
+    $marker = sys_get_temp_dir() . '/lotus_schema_app_v2_' . preg_replace('/[^A-Za-z0-9_]/', '_', $db_key);
+    if (is_file($marker)) return;
+
+    $statements = [
+        "ALTER TABLE medical_records ADD COLUMN appointment_id INT NULL",
+        "ALTER TABLE medical_records ADD COLUMN notes TEXT NULL",
+        "ALTER TABLE medical_records ADD COLUMN follow_up_date DATE NULL",
+        "ALTER TABLE services ADD COLUMN price DECIMAL(10,2) NULL",
+        "ALTER TABLE services ADD COLUMN duration_minutes INT NULL",
+        "ALTER TABLE services ADD COLUMN is_active SMALLINT DEFAULT 1",
+    ];
+
+    $ok = true;
+    foreach ($statements as $sql) {
+        if (@mysqli_query($conn, $sql)) continue;
+        $err = (string)mysqli_error($conn);
+        if (stripos($err, 'duplicate column') === false && stripos($err, 'already exists') === false) {
+            $ok = false; // real failure (e.g. table not created yet) - retry next request
+        }
+    }
+
+    if ($ok) @file_put_contents($marker, '1');
+}
 
 function mysql_bootstrap($conn) {
     $marker = sys_get_temp_dir() . '/lotus_mysql_ok';

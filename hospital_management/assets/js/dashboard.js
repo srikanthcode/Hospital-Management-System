@@ -135,8 +135,9 @@ const Dashboard = {
         let html = '<div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead><tbody>';
         appts.forEach(a => {
             const statusClass = a.status === 'Confirmed' ? 'success' : a.status === 'Completed' ? 'secondary' : a.status === 'Cancelled' ? 'danger' : 'warning';
+            const time = a.appointment_time || a.time || '';
             html += `<tr>
-                <td>${a.time ? Realtime.formatTime(a.time) : '-'}</td>
+                <td>${time ? Realtime.formatTime(time) : '-'}</td>
                 <td>${Realtime.esc(a.patient_name) || '-'}</td>
                 <td>${Realtime.esc(a.doctor_name) || '-'}</td>
                 <td><span class="badge bg-${statusClass}">${Realtime.esc(a.status)}</span></td>
