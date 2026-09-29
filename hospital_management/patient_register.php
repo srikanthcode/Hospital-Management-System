@@ -82,74 +82,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </nav>
 
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-5 col-md-7">
-      <div class="card p-4 border-0 shadow-sm" style="border-radius:16px">
-        <h4 class="pink-heading text-center mb-1" style="font-size:20px;font-weight:800">Patient Registration</h4>
-        <p class="text-center text-muted mb-3" style="font-size:12.5px">Create your account to book appointments</p>
+<div class="reg-page">
+  <div class="reg-card">
 
-        <?php if ($message !== ''): ?>
-          <div class="alert alert-danger py-2" style="font-size:13px"><?php echo e($message); ?></div>
-        <?php endif; ?>
+    <aside class="reg-aside">
+      <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="reg-logo">
+      <h2>Lotus Women's Hospital</h2>
+      <p>Care, compassion and excellence for every woman, from consultation to recovery.</p>
+      <ul class="reg-perks">
+        <li>Book appointments in seconds</li>
+        <li>View prescriptions &amp; reports</li>
+        <li>Private and secure records</li>
+      </ul>
+    </aside>
 
-        <form method="post" autocomplete="off">
-          <div class="mb-2">
-            <label class="form-label" style="font-size:13px;font-weight:600">Full name *</label>
-            <input class="form-control" name="name" required minlength="2" placeholder="Enter your full name" style="font-size:14px;padding:8px 12px">
+    <div class="reg-body">
+      <h4 class="reg-title">Patient Registration</h4>
+      <p class="reg-sub">Create your account to book appointments</p>
+
+      <?php if ($message !== ''): ?>
+        <div class="alert alert-danger py-2 reg-alert" style="font-size:12.5px"><?php echo e($message); ?></div>
+      <?php endif; ?>
+
+      <form method="post" autocomplete="off">
+        <div class="reg-grid">
+
+          <div class="reg-field">
+            <label for="regName">Full name *</label>
+            <input id="regName" class="form-control" name="name" required minlength="2" placeholder="Enter your full name">
           </div>
-          <div class="mb-2">
-            <label class="form-label" style="font-size:13px;font-weight:600">Email *</label>
-            <input type="email" class="form-control" name="email" required placeholder="you@gmail.com" style="font-size:14px;padding:8px 12px">
+
+          <div class="reg-field sp-3">
+            <label for="regEmail">Email *</label>
+            <input id="regEmail" type="email" class="form-control" name="email" required placeholder="you@gmail.com">
           </div>
-          <div class="row g-2">
-            <div class="col-4 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Age</label>
-              <input type="number" class="form-control" name="age" min="0" max="120" placeholder="25" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-4 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Blood group</label>
-              <select class="form-select" name="blood_group" style="font-size:14px;padding:8px 12px">
-                <option value="">Select</option>
-                <option>A+</option><option>A-</option>
-                <option>B+</option><option>B-</option>
-                <option>O+</option><option>O-</option>
-                <option>AB+</option><option>AB-</option>
-              </select>
-            </div>
-            <div class="col-4 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Phone</label>
-              <input class="form-control" name="phone" placeholder="+91..." style="font-size:14px;padding:8px 12px">
-            </div>
+
+          <div class="reg-field sp-3">
+            <label for="regPhone">Phone</label>
+            <input id="regPhone" class="form-control" name="phone" placeholder="+91...">
           </div>
-          <div class="mb-2">
-            <label class="form-label" style="font-size:13px;font-weight:600">Password *</label>
+
+          <div class="reg-field sp-2">
+            <label for="regAge">Age</label>
+            <input id="regAge" type="number" class="form-control" name="age" min="0" max="120" placeholder="25">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="regBlood">Blood group</label>
+            <select id="regBlood" class="form-select" name="blood_group">
+              <option value="">Select</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="regAddress">Address</label>
+            <input id="regAddress" class="form-control" name="address" placeholder="Your address">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="regPassword">Password *</label>
             <div class="pwd-wrap">
               <input type="password" class="form-control" name="password" id="regPassword"
-                     minlength="8" required placeholder="8+ characters, letter + number" style="font-size:14px;padding:8px 12px">
+                     minlength="8" required placeholder="8+ characters, letter + number">
               <button type="button" class="pwd-toggle" data-target="regPassword">Show</button>
             </div>
           </div>
-          <div class="mb-2">
-            <label class="form-label" style="font-size:13px;font-weight:600">Confirm password *</label>
+
+          <div class="reg-field sp-3">
+            <label for="regConfirm">Confirm password *</label>
             <div class="pwd-wrap">
               <input type="password" class="form-control" name="confirm_password" id="regConfirm"
-                     minlength="8" required placeholder="Repeat password" style="font-size:14px;padding:8px 12px">
+                     minlength="8" required placeholder="Repeat password">
               <button type="button" class="pwd-toggle" data-target="regConfirm">Show</button>
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label" style="font-size:13px;font-weight:600">Address</label>
-            <textarea class="form-control" name="address" rows="2" placeholder="Your address" style="font-size:14px;padding:8px 12px"></textarea>
-          </div>
-          <button class="btn pink-btn w-100" style="padding:10px;font-size:15px;font-weight:700;border-radius:10px">Create account</button>
-        </form>
 
-        <div class="text-center mt-3">
-          <a href="login.php" style="font-size:13px;color:#E91E63;font-weight:600">Already have an account? Login</a>
+          <div class="reg-actions">
+            <button class="btn pink-btn w-100">Create account</button>
+          </div>
+
+          <div class="reg-login">
+            <a href="login.php">Already have an account? Login</a>
+          </div>
+
         </div>
-      </div>
+      </form>
     </div>
+
   </div>
 </div>
 

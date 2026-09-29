@@ -82,76 +82,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </nav>
 
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-5 col-md-7">
-      <div class="card p-4 border-0 shadow-sm" style="border-radius:16px">
-        <h4 class="pink-heading text-center mb-1" style="font-size:20px;font-weight:800">Doctor Registration</h4>
-        <p class="text-center text-muted mb-3" style="font-size:12.5px">Create your professional account</p>
+<div class="reg-page">
+  <div class="reg-card">
 
-        <?php if ($message !== ''): ?>
-          <div class="alert alert-danger py-2" style="font-size:13px"><?php echo e($message); ?></div>
-        <?php endif; ?>
+    <aside class="reg-aside">
+      <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="reg-logo">
+      <h2>Doctor Portal</h2>
+      <p>Join the medical team at Lotus Women's Hospital and care for every patient with confidence.</p>
+      <ul class="reg-perks">
+        <li>Manage your appointments</li>
+        <li>Patient records at a glance</li>
+        <li>Private and secure access</li>
+      </ul>
+    </aside>
 
-        <form method="post" autocomplete="off">
-          <div class="row g-2">
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Full name *</label>
-              <input class="form-control" name="name" required minlength="2" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Email *</label>
-              <input type="email" class="form-control" name="email" required placeholder="you@gmail.com" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Password *</label>
-              <div class="pwd-wrap">
-                <input type="password" class="form-control" name="password" id="regPassword"
-                       minlength="8" required placeholder="8+ characters, letter + number" style="font-size:14px;padding:8px 12px">
-                <button type="button" class="pwd-toggle" data-target="regPassword">Show</button>
-              </div>
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Confirm password *</label>
-              <div class="pwd-wrap">
-                <input type="password" class="form-control" name="confirm_password" id="regConfirm"
-                       minlength="8" required placeholder="Repeat password" style="font-size:14px;padding:8px 12px">
-                <button type="button" class="pwd-toggle" data-target="regConfirm">Show</button>
-              </div>
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Phone</label>
-              <input class="form-control" name="phone" placeholder="+91..." style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Specialization</label>
-              <input class="form-control" name="specialization" placeholder="e.g. Gynaecology" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Qualification</label>
-              <input class="form-control" name="qualification" placeholder="e.g. MBBS, MD" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Experience</label>
-              <input class="form-control" name="experience" placeholder="e.g. 5 years" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Department</label>
-              <input class="form-control" name="department" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label" style="font-size:13px;font-weight:600">Address</label>
-              <textarea class="form-control" name="address" rows="2" style="font-size:14px;padding:8px 12px"></textarea>
+    <div class="reg-body">
+      <h4 class="reg-title">Doctor Registration</h4>
+      <p class="reg-sub">Create your professional account</p>
+
+      <?php if ($message !== ''): ?>
+        <div class="alert alert-danger py-2 reg-alert" style="font-size:12.5px"><?php echo e($message); ?></div>
+      <?php endif; ?>
+
+      <form method="post" autocomplete="off">
+        <div class="reg-grid">
+
+          <div class="reg-field">
+            <label for="docName">Full name *</label>
+            <input id="docName" class="form-control" name="name" required minlength="2" placeholder="Enter your full name">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="docEmail">Email *</label>
+            <input id="docEmail" type="email" class="form-control" name="email" required placeholder="you@gmail.com">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="docPhone">Phone</label>
+            <input id="docPhone" class="form-control" name="phone" placeholder="+91...">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="docSpec">Specialization</label>
+            <input id="docSpec" class="form-control" name="specialization" placeholder="e.g. Gynaecology">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="docQual">Qualification</label>
+            <input id="docQual" class="form-control" name="qualification" placeholder="e.g. MBBS, MD">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="docExp">Experience</label>
+            <input id="docExp" class="form-control" name="experience" placeholder="e.g. 5 years">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="docDept">Department</label>
+            <input id="docDept" class="form-control" name="department" placeholder="e.g. Gynaecology">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="docAddress">Address</label>
+            <input id="docAddress" class="form-control" name="address" placeholder="Your address">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="regPassword">Password *</label>
+            <div class="pwd-wrap">
+              <input type="password" class="form-control" name="password" id="regPassword"
+                     minlength="8" required placeholder="8+ characters, letter + number">
+              <button type="button" class="pwd-toggle" data-target="regPassword">Show</button>
             </div>
           </div>
-          <button class="btn pink-btn w-100" style="padding:10px;font-size:15px;font-weight:700;border-radius:10px">Create doctor account</button>
-        </form>
 
-        <div class="text-center mt-3">
-          <a href="login.php" style="font-size:13px;color:#E91E63;font-weight:600">Already have an account? Login</a>
+          <div class="reg-field sp-3">
+            <label for="regConfirm">Confirm password *</label>
+            <div class="pwd-wrap">
+              <input type="password" class="form-control" name="confirm_password" id="regConfirm"
+                     minlength="8" required placeholder="Repeat password">
+              <button type="button" class="pwd-toggle" data-target="regConfirm">Show</button>
+            </div>
+          </div>
+
+          <div class="reg-actions">
+            <button class="btn pink-btn w-100">Create doctor account</button>
+          </div>
+
+          <div class="reg-login">
+            <a href="login.php">Already have an account? Login</a>
+          </div>
+
         </div>
-      </div>
+      </form>
     </div>
+
   </div>
 </div>
 

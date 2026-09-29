@@ -80,73 +80,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </nav>
 
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-5 col-md-7">
-      <div class="card p-4 border-0 shadow-sm" style="border-radius:16px">
-        <h4 class="pink-heading text-center mb-1" style="font-size:20px;font-weight:800">Nurse Registration</h4>
-        <p class="text-center text-muted mb-3" style="font-size:12.5px">Create your staff account</p>
+<div class="reg-page">
+  <div class="reg-card">
 
-        <?php if ($message !== ''): ?>
-          <div class="alert alert-danger py-2" style="font-size:13px"><?php echo e($message); ?></div>
-        <?php endif; ?>
+    <aside class="reg-aside">
+      <img src="assets/images/logo3.jpeg" alt="Lotus Women's Hospital" class="reg-logo">
+      <h2>Nurse Portal</h2>
+      <p>Work with a caring team that puts compassion and excellence first, every shift.</p>
+      <ul class="reg-perks">
+        <li>View your shift roster</li>
+        <li>Patient care at a glance</li>
+        <li>Private and secure access</li>
+      </ul>
+    </aside>
 
-        <form method="post" autocomplete="off">
-          <div class="row g-2">
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Full name *</label>
-              <input class="form-control" name="name" required minlength="2" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Email *</label>
-              <input type="email" class="form-control" name="email" required placeholder="you@gmail.com" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Password *</label>
-              <div class="pwd-wrap">
-                <input type="password" class="form-control" name="password" id="regPassword"
-                       minlength="8" required placeholder="8+ characters, letter + number" style="font-size:14px;padding:8px 12px">
-                <button type="button" class="pwd-toggle" data-target="regPassword">Show</button>
-              </div>
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Confirm password *</label>
-              <div class="pwd-wrap">
-                <input type="password" class="form-control" name="confirm_password" id="regConfirm"
-                       minlength="8" required placeholder="Repeat password" style="font-size:14px;padding:8px 12px">
-                <button type="button" class="pwd-toggle" data-target="regConfirm">Show</button>
-              </div>
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Phone</label>
-              <input class="form-control" name="phone" placeholder="+91..." style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Shift</label>
-              <select class="form-select" name="shift" style="font-size:14px;padding:8px 12px">
-                <option value="">Select</option>
-                <option>Morning</option>
-                <option>Evening</option>
-                <option>Night</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-2">
-              <label class="form-label" style="font-size:13px;font-weight:600">Department</label>
-              <input class="form-control" name="department" placeholder="e.g. Maternity" style="font-size:14px;padding:8px 12px">
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label" style="font-size:13px;font-weight:600">Address</label>
-              <textarea class="form-control" name="address" rows="2" style="font-size:14px;padding:8px 12px"></textarea>
+    <div class="reg-body">
+      <h4 class="reg-title">Nurse Registration</h4>
+      <p class="reg-sub">Create your staff account</p>
+
+      <?php if ($message !== ''): ?>
+        <div class="alert alert-danger py-2 reg-alert" style="font-size:12.5px"><?php echo e($message); ?></div>
+      <?php endif; ?>
+
+      <form method="post" autocomplete="off">
+        <div class="reg-grid">
+
+          <div class="reg-field">
+            <label for="nurName">Full name *</label>
+            <input id="nurName" class="form-control" name="name" required minlength="2" placeholder="Enter your full name">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="nurEmail">Email *</label>
+            <input id="nurEmail" type="email" class="form-control" name="email" required placeholder="you@gmail.com">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="nurPhone">Phone</label>
+            <input id="nurPhone" class="form-control" name="phone" placeholder="+91...">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="nurShift">Shift</label>
+            <select id="nurShift" class="form-select" name="shift">
+              <option value="">Select</option>
+              <option>Morning</option>
+              <option>Evening</option>
+              <option>Night</option>
+            </select>
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="nurDept">Department</label>
+            <input id="nurDept" class="form-control" name="department" placeholder="e.g. Maternity">
+          </div>
+
+          <div class="reg-field sp-2">
+            <label for="nurAddress">Address</label>
+            <input id="nurAddress" class="form-control" name="address" placeholder="Your address">
+          </div>
+
+          <div class="reg-field sp-3">
+            <label for="regPassword">Password *</label>
+            <div class="pwd-wrap">
+              <input type="password" class="form-control" name="password" id="regPassword"
+                     minlength="8" required placeholder="8+ characters, letter + number">
+              <button type="button" class="pwd-toggle" data-target="regPassword">Show</button>
             </div>
           </div>
-          <button class="btn pink-btn w-100" style="padding:10px;font-size:15px;font-weight:700;border-radius:10px">Create nurse account</button>
-        </form>
 
-        <div class="text-center mt-3">
-          <a href="login.php" style="font-size:13px;color:#E91E63;font-weight:600">Already have an account? Login</a>
+          <div class="reg-field sp-3">
+            <label for="regConfirm">Confirm password *</label>
+            <div class="pwd-wrap">
+              <input type="password" class="form-control" name="confirm_password" id="regConfirm"
+                     minlength="8" required placeholder="Repeat password">
+              <button type="button" class="pwd-toggle" data-target="regConfirm">Show</button>
+            </div>
+          </div>
+
+          <div class="reg-actions">
+            <button class="btn pink-btn w-100">Create nurse account</button>
+          </div>
+
+          <div class="reg-login">
+            <a href="login.php">Already have an account? Login</a>
+          </div>
+
         </div>
-      </div>
+      </form>
     </div>
+
   </div>
 </div>
 
