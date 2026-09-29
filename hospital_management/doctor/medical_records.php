@@ -32,10 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $patients = mysqli_query($conn, "SELECT p.id,p.name FROM patients p
     JOIN appointments a ON a.patient_id = p.id WHERE a.doctor_id = $doctor_id GROUP BY p.id");
 
-$records = mysqli_query($conn, "SELECT mr.*, p.name AS patient_name FROM medical_records mr
-    JOIN patients p ON p.id = mr.patient_id
-    WHERE mr.doctor_id = $doctor_id ORDER BY mr.id DESC");
-
 $page_title = "Medical Records";
 $active = "doc_records";
 $base = "../";
@@ -48,9 +44,8 @@ include "../includes/layout.php";
       <form method="post">
         <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
         <div class="mb-2"><label class="form-label">Patient</label>
-          <select name="patient_id" class="form-select" required>
+          <select name="patient_id" class="form-select" required id="recordPatientSelect">
             <option value="">-- Select --</option>
-            <?php while ($p = mysqli_fetch_assoc($patients)) { echo '<option value="'.$p['id'].'">'.e($p['name']).'</option>'; } ?>
           </select>
         </div>
         <div class="mb-2"><label class="form-label">Diagnosis</label>
@@ -75,19 +70,113 @@ include "../includes/layout.php";
       <div class="table-responsive">
         <table class="table table-bordered">
           <thead><tr><th>ID</th><th>Patient</th><th>Date</th><th>Diagnosis</th></tr></thead>
-          <tbody>
-          <?php if (mysqli_num_rows($records) > 0) { while ($r = mysqli_fetch_assoc($records)) { ?>
-            <tr>
-              <td><?php echo $r['id']; ?></td>
-              <td><?php echo e($r['patient_name']); ?></td>
-              <td><?php echo e($r['record_date']); ?></td>
-              <td><?php echo e($r['diagnosis']); ?></td>
-            </tr>
-          <?php } } else { echo '<tr><td colspan="4" class="text-center">No records yet.</td></tr>'; } ?>
+          <tbody id="recordsBody">
+            <tr><td colspan="4" class="text-center">Loading...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+    let polling = false;
+    let patientsCache = [];
+
+    function renderRecords(records) {
+        const tbody = document.getElementById('recordsBody');
+        if (!tbody) return;
+
+        if (!records || records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">No records yet.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        records.forEach(r => {
+            html += `
+                <tr>
+                    <td>${Realtime.esc(r.id)}</td>
+                    <td>${Realtime.esc(r.patient_name)}</td>
+                    <td>${Realtime.esc(r.record_date)}</td>
+                    <td>${Realtime.esc(r.diagnosis)}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function populatePatients() {
+        const select = document.getElementById('recordPatientSelect');
+        if (select && patientsCache.length) {
+            select.innerHTML = '<option value="">-- Select --</option>' +
+                patientsCache.map(p => '<option value="' + Realtime.esc(p.id) + '">' + Realtime.esc(p.name) + '</option>').join('');
+        }
+    }
+
+    async function loadAll() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const [patientsResp, recordsResp] = await Promise.all([
+                fetch('../api/doctor_patients.php?limit=1000', { credentials: 'same-origin' }),
+                fetch('../api/doctor_medical_records.php?limit=100', { credentials: 'same-origin' })
+            ]);
+
+            if (patientsResp.ok) {
+                const p = await patientsResp.json();
+                if (p && !p.error) { patientsCache = p.patients || []; populatePatients(); }
+            }
+
+            if (recordsResp.ok) {
+                const r = await recordsResp.json();
+                if (r && !r.error) { renderRecords(r.records); }
+            }
+        } catch (e) {
+            console.error('Failed to load medical records:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    function renderRecords(records) {
+        const tbody = document.getElementById('recordsBody');
+        if (!tbody) return;
+
+        if (!records || records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">No records yet.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        records.forEach(r => {
+            html += `
+                <tr>
+                    <td>${Realtime.esc(r.id)}</td>
+                    <td>${Realtime.esc(r.patient_name)}</td>
+                    <td>${Realtime.esc(r.record_date)}</td>
+                    <td>${Realtime.esc(r.diagnosis)}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    // Initial load
+    loadAll();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('doctor_medical_records', '../api/doctor_medical_records.php?limit=100',
+        (data) => {
+            if (data && !data.error) {
+                renderRecords(data.records);
+            }
+        }, 10000);
+
+    // Refresh after form submission
+    document.querySelector('form[method="post"]').addEventListener('submit', function() {
+        setTimeout(loadAll, 500);
+    });
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

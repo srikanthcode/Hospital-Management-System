@@ -50,7 +50,7 @@ include "../includes/layout.php";
 <div class="table-responsive">
 <table class="table table-bordered table-hover">
 <thead><tr><th>ID</th><th>Vehicle #</th><th>Driver Name</th><th>Driver Phone</th><th>Status</th><th>Action</th></tr></thead>
-<tbody>
+<tbody id="ambulanceBody">
 <?php while ($a = mysqli_fetch_assoc($ambulances)) { ?>
   <tr>
     <td><?php echo $a['id']; ?></td>
@@ -99,4 +99,99 @@ include "../includes/layout.php";
 </div></div></div>
 
 <div class="text-center mt-3"><a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a></div>
+
+<script>
+(function() {
+    let polling = false;
+
+    function getStatusClass(status) {
+        const classes = {
+            'Available': 'success',
+            'On Duty': 'warning',
+            'Maintenance': 'info'
+        };
+        return classes[status] || 'secondary';
+    }
+
+    function renderAmbulances(ambulances) {
+        const tbody = document.getElementById('ambulanceBody');
+        if (!tbody) return;
+
+        if (!ambulances || ambulances.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No ambulances.</td></tr>';
+            return;
+        }
+
+        const csrf = '<?php echo e(csrf_token()); ?>';
+        let html = '';
+        ambulances.forEach(a => {
+            const cls = getStatusClass(a.status);
+            html += `
+                <tr>
+                    <td>${Realtime.esc(a.id)}</td>
+                    <td>${Realtime.esc(a.vehicle_number)}</td>
+                    <td>${Realtime.esc(a.driver_name)}</td>
+                    <td>${Realtime.esc(a.driver_phone)}</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="${csrf}">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="${Realtime.esc(a.id)}">
+                            <select name="status" class="form-select form-select-sm d-inline" style="width:auto" onchange="this.form.submit()">
+                                <option value="Available" ${a.status==='Available'?'selected':''}>Available</option>
+                                <option value="On Duty" ${a.status==='On Duty'?'selected':''}>On Duty</option>
+                                <option value="Maintenance" ${a.status==='Maintenance'?'selected':''}>Maintenance</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="${csrf}">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="${Realtime.esc(a.id)}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?');">Del</button>
+                        </form>
+                    </td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadAmbulances() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const resp = await fetch('../api/ambulance.php?limit=100', { credentials: 'same-origin' });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderAmbulances(data.ambulances);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load ambulances:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadAmbulances();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('manage_ambulance', '../api/ambulance.php?limit=100',
+        (data) => {
+            if (data && !data.error) {
+                renderAmbulances(data.ambulances);
+            }
+        }, 10000);
+
+    // Refresh after modal actions
+    const addModal = document.getElementById('addAmbModal');
+    if (addModal) {
+        addModal.addEventListener('hidden.bs.modal', loadAmbulances);
+    }
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

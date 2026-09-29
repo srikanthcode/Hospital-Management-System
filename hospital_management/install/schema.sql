@@ -226,6 +226,22 @@ CREATE TABLE IF NOT EXISTS salary_records (
 );
 
 -- ------------------------------------------------------------
+-- OTP CODES  (Gmail OTP for registration + password reset)
+-- The code itself is never stored - only a hash of it.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS otp_codes (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(150) NOT NULL,
+  purpose VARCHAR(20) NOT NULL
+    CHECK (purpose IN ('register','reset')),
+  code_hash VARCHAR(255) NOT NULL,
+  attempts SMALLINT NOT NULL DEFAULT 0,
+  consumed SMALLINT NOT NULL DEFAULT 0,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ------------------------------------------------------------
 -- USEFUL INDEXES
 -- ------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_apt_date ON appointments(appointment_date);
@@ -235,6 +251,7 @@ CREATE INDEX IF NOT EXISTS idx_er_created ON emergency_records(created_at);
 CREATE INDEX IF NOT EXISTS idx_adm_patient ON admissions(patient_id);
 CREATE INDEX IF NOT EXISTS idx_bed_status ON beds(status);
 CREATE INDEX IF NOT EXISTS idx_salary_month ON salary_records(salary_month);
+CREATE INDEX IF NOT EXISTS idx_otp_email ON otp_codes(email, purpose);
 
 -- ============================================================
 -- SEED DATA  (idempotent — safe to re-run)

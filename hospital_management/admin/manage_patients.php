@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = $_GET['search'] ?? '';
 if ($search) {
     $searchEsc = mysqli_real_escape_string($conn, $search);
-    $result = mysqli_query($conn, "SELECT * FROM patients WHERE name ILIKE '%$searchEsc%' OR phone ILIKE '%$searchEsc%' OR email ILIKE '%$searchEsc%' ORDER BY id DESC");
+    $result = mysqli_query($conn, "SELECT * FROM patients WHERE name LIKE '%$searchEsc%' OR phone LIKE '%$searchEsc%' OR email LIKE '%$searchEsc%' ORDER BY id DESC");
 } else {
     $result = mysqli_query($conn, "SELECT * FROM patients ORDER BY id DESC");
 }
@@ -47,17 +47,17 @@ include "../includes/layout.php";
   <h5>Manage Patients</h5>
   <button class="btn pink-btn btn-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">+ Add Patient</button>
 </div>
-<form method="get" class="mb-3">
+<form method="get" class="mb-3" id="searchForm">
   <div class="input-group">
-    <input type="text" class="form-control" name="search" placeholder="Search by name, phone, email..." value="<?php echo e($search); ?>">
-    <button class="btn btn-outline-danger">Search</button>
+    <input type="text" class="form-control" name="search" id="searchInput" placeholder="Search by name, phone, email..." value="<?php echo e($search); ?>">
+    <button class="btn btn-outline-danger" type="submit">Search</button>
     <a href="manage_patients.php" class="btn btn-outline-secondary">Reset</a>
   </div>
 </form>
 <div class="table-responsive">
 <table class="table table-bordered table-hover">
 <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Email</th><th>Blood</th><th>Action</th></tr></thead>
-<tbody>
+<tbody id="patientsBody">
 <?php if (mysqli_num_rows($result) > 0) { while ($p = mysqli_fetch_assoc($result)) { ?>
   <tr>
     <td><?php echo $p['id']; ?></td>
@@ -68,12 +68,12 @@ include "../includes/layout.php";
     <td><?php echo e($p['email']); ?></td>
     <td><?php echo e($p['blood_group']); ?></td>
     <td>
-      <a href="view_patient.php?id=<?php echo $p['id']; ?>" class="btn btn-sm btn-info text-white">View</a>
+      <a href="../view_patient.php?id=<?php echo $p['id']; ?>" class="btn btn-sm btn-info text-white">View</a>
       <form method="post" class="d-inline">
         <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
-        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?');">Del</button>
+        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this patient?');">Del</button>
       </form>
     </td>
   </tr>
@@ -87,7 +87,7 @@ include "../includes/layout.php";
 <div class="modal fade" id="addPatientModal"><div class="modal-dialog"><div class="modal-content">
   <div class="modal-header bg-danger text-white"><h5 class="modal-title">Add Patient</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
   <div class="modal-body">
-    <form method="post">
+    <form method="post" id="addPatientForm">
       <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
       <input type="hidden" name="action" value="add">
       <div class="mb-2"><label class="form-label">Name *</label><input class="form-control" name="name" required></div>
@@ -107,4 +107,97 @@ include "../includes/layout.php";
 </div></div></div>
 
 <div class="text-center mt-3"><a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a></div>
+
+<script>
+(function() {
+    let currentSearch = '<?php echo e($search); ?>';
+    let polling = false;
+
+    function renderPatients(patients) {
+        const tbody = document.getElementById('patientsBody');
+        if (!tbody) return;
+
+        if (!patients || patients.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No patients found.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        patients.forEach(p => {
+            const csrf = '<?php echo e(csrf_token()); ?>';
+            html += `
+                <tr>
+                    <td>${Realtime.esc(p.id)}</td>
+                    <td>${Realtime.esc(p.name)}</td>
+                    <td>${Realtime.esc(p.age)}</td>
+                    <td>${Realtime.esc(p.gender)}</td>
+                    <td>${Realtime.esc(p.phone)}</td>
+                    <td>${Realtime.esc(p.email)}</td>
+                    <td>${Realtime.esc(p.blood_group)}</td>
+                    <td>
+                        <a href="../view_patient.php?id=${Realtime.esc(p.id)}" class="btn btn-sm btn-info text-white">View</a>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="${csrf}">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="${Realtime.esc(p.id)}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this patient?');">Del</button>
+                        </form>
+                    </td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadPatients() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const params = new URLSearchParams();
+            if (currentSearch) params.set('search', currentSearch);
+            params.set('limit', 100);
+            params.set('offset', 0);
+
+            const resp = await fetch('../api/patients.php?' + params.toString(), {
+                credentials: 'same-origin'
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderPatients(data.patients);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load patients:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Search form handler
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentSearch = document.getElementById('searchInput').value.trim();
+            history.replaceState(null, '', currentSearch ? '?search=' + encodeURIComponent(currentSearch) : 'manage_patients.php');
+            loadPatients();
+        });
+    }
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('manage_patients', '../api/patients.php?' + new URLSearchParams({limit: 100, offset: 0}).toString(),
+        (data) => {
+            if (data && !data.error) {
+                renderPatients(data.patients);
+            }
+        }, 10000);
+
+    // Refresh after modal actions
+    const addModal = document.getElementById('addPatientModal');
+    if (addModal) {
+        addModal.addEventListener('hidden.bs.modal', loadPatients);
+    }
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

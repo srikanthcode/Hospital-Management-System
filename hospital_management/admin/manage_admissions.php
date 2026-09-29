@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reason = trim($_POST['reason'] ?? '');
 
         if ($patient_id && $bed_id) {
-            // Check bed available
             $r = mysqli_query($conn, "SELECT status FROM beds WHERE id = $bed_id");
             $bed = mysqli_fetch_assoc($r);
             if ($bed && $bed['status'] === 'Available') {
@@ -63,23 +62,25 @@ $admissions = mysqli_query($conn, "SELECT a.*, p.name AS patient_name, b.bed_num
     LEFT JOIN doctors d ON d.id = a.doctor_id
     ORDER BY a.id DESC");
 
+$admittedCount = (int)mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM admissions WHERE status='Admitted'"))['c'];
+$dischargedCount = (int)mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM admissions WHERE status='Discharged'"))['c'];
+
 $page_title = "Patient Admissions";
 $active = "admissions";
 $base = "../";
 include "../includes/layout.php";
 ?>
-
 <div class="row g-3">
   <div class="col-md-4">
     <div class="card p-3">
       <h6>Currently Admitted</h6>
-      <h2 class="text-danger"><?php echo mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM admissions WHERE status='Admitted'"))['c']; ?></h2>
+      <h2 class="text-danger" id="statAdmitted"><?php echo $admittedCount; ?></h2>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card p-3">
       <h6>Total Discharged</h6>
-      <h2 class="text-success"><?php echo mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM admissions WHERE status='Discharged'"))['c']; ?></h2>
+      <h2 class="text-success" id="statDischarged"><?php echo $dischargedCount; ?></h2>
     </div>
   </div>
 </div>
@@ -92,19 +93,19 @@ include "../includes/layout.php";
         <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
         <input type="hidden" name="action" value="admit">
         <div class="mb-2"><label class="form-label">Patient</label>
-          <select name="patient_id" class="form-select" required>
+          <select name="patient_id" class="form-select" required id="admitPatientSelect">
             <option value="">-- Select --</option>
             <?php while ($p = mysqli_fetch_assoc($patients)) { echo '<option value="'.$p['id'].'">'.e($p['name']).'</option>'; } ?>
           </select>
         </div>
         <div class="mb-2"><label class="form-label">Available Bed</label>
-          <select name="bed_id" class="form-select" required>
+          <select name="bed_id" class="form-select" required id="admitBedSelect">
             <option value="">-- Select --</option>
             <?php while ($b = mysqli_fetch_assoc($beds)) { echo '<option value="'.$b['id'].'">'.e($b['ward_name'].' - '.$b['bed_number']).'</option>'; } ?>
           </select>
         </div>
         <div class="mb-2"><label class="form-label">Doctor</label>
-          <select name="doctor_id" class="form-select">
+          <select name="doctor_id" class="form-select" id="admitDoctorSelect">
             <option value="">-- Select --</option>
             <?php while ($d = mysqli_fetch_assoc($doctors)) { echo '<option value="'.$d['id'].'">'.e($d['name']).'</option>'; } ?>
           </select>
@@ -122,8 +123,8 @@ include "../includes/layout.php";
       <div class="table-responsive">
         <table class="table table-bordered table-sm">
           <thead><tr><th>ID</th><th>Patient</th><th>Ward</th><th>Bed</th><th>Doctor</th><th>Admitted</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-          <?php while ($a = mysqli_fetch_assoc($admissions)) { ?>
+          <tbody id="admissionsBody">
+          <?php if (mysqli_num_rows($admissions) > 0) { while ($a = mysqli_fetch_assoc($admissions)) { ?>
             <tr>
               <td><?php echo $a['id']; ?></td>
               <td><?php echo e($a['patient_name']); ?></td>
@@ -143,7 +144,7 @@ include "../includes/layout.php";
                 <?php else: ?> - <?php endif; ?>
               </td>
             </tr>
-          <?php } ?>
+          <?php } } else { echo '<tr><td colspan="8" class="text-center">No admissions.</td></tr>'; } ?>
           </tbody>
         </table>
       </div>
@@ -152,4 +153,153 @@ include "../includes/layout.php";
 </div>
 
 <div class="text-center mt-3"><a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a></div>
+
+<script>
+(function() {
+    let polling = false;
+    let patientsCache = [];
+    let doctorsCache = [];
+    let bedsCache = [];
+
+    function getStatusBadge(status) {
+        return '<span class="badge bg-' + (status === 'Admitted' ? 'danger' : 'success') + '">' + Realtime.esc(status) + '</span>';
+    }
+
+    function renderStats(admitted, discharged) {
+        Realtime.updateText('statAdmitted', admitted);
+        Realtime.updateText('statDischarged', discharged);
+    }
+
+    function renderAdmissions(admissions) {
+        const tbody = document.getElementById('admissionsBody');
+        if (!tbody) return;
+
+        if (!admissions || admissions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No admissions.</td></tr>';
+            return;
+        }
+
+        const csrf = '<?php echo e(csrf_token()); ?>';
+        let html = '';
+        admissions.forEach(a => {
+            const badge = getStatusBadge(a.status);
+            const action = a.status === 'Admitted'
+                ? `<form method="post" class="d-inline">
+                    <input type="hidden" name="csrf" value="${csrf}">
+                    <input type="hidden" name="action" value="discharge">
+                    <input type="hidden" name="admission_id" value="${Realtime.esc(a.id)}">
+                    <button class="btn btn-sm btn-success" onclick="return confirm('Discharge this patient?');">Discharge</button>
+                  </form>`
+                : '-';
+            html += `
+                <tr>
+                    <td>${Realtime.esc(a.id)}</td>
+                    <td>${Realtime.esc(a.patient_name)}</td>
+                    <td>${Realtime.esc(a.ward_name || '')}</td>
+                    <td>${Realtime.esc(a.bed_number || '')}</td>
+                    <td>${Realtime.esc(a.doctor_name || '')}</td>
+                    <td>${Realtime.esc(a.admission_date)}</td>
+                    <td>${badge}</td>
+                    <td>${action}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function populateDropdowns() {
+        // Populate patient select
+        const pSelect = document.getElementById('admitPatientSelect');
+        if (pSelect && patientsCache.length) {
+            pSelect.innerHTML = '<option value="">-- Select --</option>' +
+                patientsCache.map(p => '<option value="' + Realtime.esc(p.id) + '">' + Realtime.esc(p.name) + '</option>').join('');
+        }
+        // Populate doctor select
+        const dSelect = document.getElementById('admitDoctorSelect');
+        if (dSelect && doctorsCache.length) {
+            dSelect.innerHTML = '<option value="">-- Select --</option>' +
+                doctorsCache.map(d => '<option value="' + Realtime.esc(d.id) + '">' + Realtime.esc(d.name) + '</option>').join('');
+        }
+        // Populate bed select
+        const bSelect = document.getElementById('admitBedSelect');
+        if (bSelect && bedsCache.length) {
+            bSelect.innerHTML = '<option value="">-- Select --</option>' +
+                bedsCache.map(b => '<option value="' + Realtime.esc(b.id) + '">' + Realtime.esc(b.ward_name + ' - ' + b.bed_number) + '</option>').join('');
+        }
+    }
+
+    async function loadAll() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const [statsResp, admissionsResp, patientsResp, doctorsResp, bedsResp] = await Promise.all([
+                fetch('../api/admissions.php?limit=1', { credentials: 'same-origin' }),
+                fetch('../api/admissions.php?limit=200', { credentials: 'same-origin' }),
+                fetch('../api/patients.php?limit=1000', { credentials: 'same-origin' }),
+                fetch('../api/doctors.php?limit=1000', { credentials: 'same-origin' }),
+                fetch('../api/beds.php', { credentials: 'same-origin' })
+            ]);
+
+            if (statsResp.ok) {
+                const stats = await statsResp.json();
+                if (stats && !stats.error) {
+                    renderStats(stats.total, 0);
+                }
+            }
+
+            if (admissionsResp.ok) {
+                const adm = await admissionsResp.json();
+                if (adm && !adm.error) {
+                    const admittedCount = adm.admissions.filter(a => a.status === 'Admitted').length;
+                    const dischargedCount = adm.admissions.filter(a => a.status === 'Discharged').length;
+                    renderStats(admittedCount, dischargedCount);
+                    renderAdmissions(adm.admissions);
+                }
+            }
+
+            if (patientsResp.ok) {
+                const p = await patientsResp.json();
+                if (p && !p.error) { patientsCache = p.patients; populateDropdowns(); }
+            }
+
+            if (doctorsResp.ok) {
+                const d = await doctorsResp.json();
+                if (d && !d.error) { doctorsCache = d.doctors; populateDropdowns(); }
+            }
+
+            if (bedsResp.ok) {
+                const b = await bedsResp.json();
+                if (b && !b.error) {
+                    bedsCache = b.beds.filter(b => b.status === 'Available');
+                    populateDropdowns();
+                }
+            }
+
+        } catch (e) {
+            console.error('Failed to load admissions:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadAll();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('manage_admissions', '../api/admissions.php?limit=200',
+        (data) => {
+            if (data && !data.error) {
+                const admittedCount = data.admissions.filter(a => a.status === 'Admitted').length;
+                const dischargedCount = data.admissions.filter(a => a.status === 'Discharged').length;
+                renderStats(admittedCount, dischargedCount);
+                renderAdmissions(data.admissions);
+            }
+        }, 10000);
+
+    // Refresh after form submission
+    document.querySelector('form[action="admit"]').addEventListener('submit', function() {
+        setTimeout(loadAll, 500);
+    });
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

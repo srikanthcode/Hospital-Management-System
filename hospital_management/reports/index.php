@@ -33,7 +33,7 @@ include "../includes/layout.php";
 <div class="row g-3 mt-1">
   <div class="col-md-3">
     <a href="salary_reports.php" class="text-decoration-none">
-      <div class="card p-4 text-center stat-card"><h5>Salary Reports</h5><p class="text-muted">Staff salary, payment status</p></div>
+      <div class="card p-4 text-center stat-card"><h5>Salary Reports</h5><p class="text-muted">Assignments, payouts &amp; printable statement</p></div>
     </a>
   </div>
 </div>

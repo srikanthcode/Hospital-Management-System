@@ -628,46 +628,72 @@ body{
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #fff5f8 0%, #fce4ec 100%);
-    padding: 40px 20px;
+    padding: 32px 20px;
 }
 
 .login-box {
     background: #fff;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(233, 30, 99, 0.12);
+    padding: 28px 26px 24px;
+    border-radius: 16px;
+    box-shadow: 0 12px 34px rgba(233, 30, 99, 0.10);
     width: 100%;
-    max-width: 420px;
+    max-width: 380px;
     text-align: center;
     border: 1px solid #fce4ec;
 }
 
+.login-brand {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fce4ec;
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.login-brand img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .login-box h2 {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 800;
     color: #E91E63;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-family: 'Georgia', serif;
 }
 
 .login-subtitle {
-    color: #888;
-    font-size: 14px;
-    margin-bottom: 25px;
+    color: #8a8a8a;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.login-box .mb-3 {
+    margin-bottom: 14px;
 }
 
 .login-box .form-label {
     font-weight: 600;
-    color: #333;
-    font-size: 14px;
+    color: #444;
+    font-size: 13px;
     text-align: left;
     display: block;
+    margin-bottom: 6px;
 }
 
 .login-box .form-control {
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e4e4e4;
     font-size: 14px;
     transition: border-color 0.3s ease;
 }
@@ -678,90 +704,112 @@ body{
 }
 
 .login-box .pink-btn {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 10px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 15px;
-    margin-top: 10px;
+    font-size: 14.5px;
+    margin-top: 4px;
+}
+
+.forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: -4px 0 12px;
 }
 
 .login-links {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #f2f2f2;
 }
 
 .login-links a {
-    color: #E91E63;
+    color: #7d7d7d;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     transition: color 0.3s ease;
 }
 
 .login-links a:hover {
-    color: #C2185B;
+    color: #E91E63;
 }
 
 .register-section {
-    margin-top: 25px;
-    padding-top: 25px;
-    border-top: 1px solid #f0f0f0;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f2f2f2;
 }
 
 .register-text {
     color: #666;
-    font-size: 14px;
-    margin-bottom: 15px;
+    font-size: 13px;
+    margin-bottom: 10px;
 }
 
 .register-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
 
 .btn-register {
-    padding: 10px 15px;
-    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12.5px;
+    line-height: 1.2;
     text-decoration: none;
-    transition: all 0.3s ease;
-    border: 2px solid;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .btn-patient {
     color: #E91E63;
-    border-color: #E91E63;
-    background: transparent;
+    border-color: #f8bbd0;
+    background: #fff5f8;
 }
 
-.btn-patient:hover {
+.btn-patient:hover,
+.btn-patient:focus-visible {
     background: #E91E63;
+    border-color: #E91E63;
     color: #fff;
 }
 
 .btn-doctor {
-    color: #2196F3;
-    border-color: #2196F3;
-    background: transparent;
+    color: #1976D2;
+    border-color: #bbdefb;
+    background: #f5faff;
 }
 
-.btn-doctor:hover {
+.btn-doctor:hover,
+.btn-doctor:focus-visible {
     background: #2196F3;
+    border-color: #2196F3;
     color: #fff;
 }
 
 .btn-nurse {
-    color: #4CAF50;
-    border-color: #4CAF50;
-    background: transparent;
+    color: #2E7D32;
+    border-color: #c8e6c9;
+    background: #f4fbf5;
 }
 
-.btn-nurse:hover {
+.btn-nurse:hover,
+.btn-nurse:focus-visible {
     background: #4CAF50;
+    border-color: #4CAF50;
     color: #fff;
+}
+
+.register-hint {
+    color: #9b9b9b;
+    font-size: 11.5px;
+    margin: 8px 0 0;
 }
 
 .footer {
@@ -774,11 +822,16 @@ body{
 
 @media (max-width: 576px) {
     .login-box {
-        padding: 30px 25px;
+        padding: 24px 20px 20px;
     }
 
     .login-box h2 {
-        font-size: 24px;
+        font-size: 20px;
+    }
+
+    .btn-register {
+        font-size: 12px;
+        padding: 8px 4px;
     }
 }
 
@@ -993,3 +1046,187 @@ font-size:16px;
     }
 
 }
+
+/* ================= OTP / GMAIL VERIFICATION ================= */
+
+.otp-stepper{
+    display:flex;
+    gap:6px;
+    margin:18px 0 20px;
+    background:#f8f9fa;
+    border:1px solid #eceff1;
+    border-radius:12px;
+    padding:6px;
+}
+.otp-step{
+    flex:1;
+    text-align:center;
+    font-size:12px;
+    font-weight:600;
+    color:#9aa0a6;
+    padding:8px 4px;
+    border-radius:9px;
+    transition:.25s;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.otp-step span{
+    display:inline-block;
+    width:20px; height:20px; line-height:20px;
+    border-radius:50%;
+    background:#e0e0e0;
+    color:#6b7075;
+    font-size:11px;
+    margin-right:5px;
+}
+.otp-step.active{ background:#fff; color:#E91E63; box-shadow:0 2px 8px rgba(0,0,0,.07); }
+.otp-step.active span{ background:#E91E63; color:#fff; }
+.otp-step.done{ color:#2e7d32; }
+.otp-step.done span{ background:#4CAF50; color:#fff; }
+
+.otp-alert{
+    border-radius:10px;
+    padding:11px 14px;
+    font-size:13.5px;
+    font-weight:500;
+    margin:12px 0;
+    line-height:1.5;
+    animation:otpIn .25s ease;
+}
+@keyframes otpIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;} }
+.otp-alert-success{ background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; }
+.otp-alert-error{ background:#ffebee; color:#b71c1c; border:1px solid #ef9a9a; }
+.otp-alert-warning{ background:#fff8e1; color:#e65100; border:1px solid #ffe082; }
+.otp-alert-info{ background:#e3f2fd; color:#0d47a1; border:1px solid #90caf9; }
+
+.otp-subtitle{ color:#5f6368; font-size:13.5px; line-height:1.6; margin-bottom:16px; }
+.otp-hint{ color:#80868b; font-size:12px; line-height:1.6; margin-top:14px; }
+.otp-sent-to{ font-size:14px; color:#3c4043; margin-bottom:14px; }
+.otp-sent-to strong{ color:#E91E63; word-break:break-all; }
+
+.otp-boxes{ display:flex; gap:8px; justify-content:space-between; margin-bottom:14px; }
+.otp-box{
+    width:100%; max-width:52px; height:56px;
+    text-align:center; font-size:24px; font-weight:700;
+    border:2px solid #e0e0e0; border-radius:12px;
+    background:#fff; color:#E91E63;
+    transition:.2s;
+    outline:none;
+}
+.otp-box:focus{
+    border-color:#E91E63;
+    box-shadow:0 0 0 4px rgba(233,30,99,.12);
+    transform:translateY(-2px);
+}
+
+.otp-meta{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12.5px; color:#5f6368; margin-bottom:12px;
+}
+.otp-meta strong{ color:#E91E63; font-variant-numeric:tabular-nums; }
+.otp-attempts{ color:#b71c1c; }
+
+.otp-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.otp-row .btn-link{ color:#E91E63; font-weight:600; }
+
+.otp-spinner{
+    display:inline-block; width:14px; height:14px;
+    border:2px solid rgba(255,255,255,.45);
+    border-top-color:#fff; border-radius:50%;
+    animation:otpSpin .7s linear infinite;
+    vertical-align:-2px;
+}
+@keyframes otpSpin{ to{ transform:rotate(360deg); } }
+
+/* Password field with show / hide */
+.pwd-wrap{ position:relative; }
+.pwd-wrap .form-control{ padding-right:74px; }
+.pwd-toggle{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    border:none; background:transparent; color:#E91E63;
+    font-size:12px; font-weight:700; padding:6px 8px; cursor:pointer;
+}
+.pwd-toggle:hover{ color:#C2185B; }
+
+/* ================= GMAIL PREVIEW MODAL ================= */
+
+.gmail-overlay{
+    position:fixed; inset:0; z-index:2000;
+    background:rgba(32,33,36,.55);
+    backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0; transition:opacity .18s ease;
+}
+.gmail-overlay.open{ opacity:1; }
+.gmail-modal{
+    width:100%; max-width:560px;
+    background:#fff; border-radius:14px; overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.35);
+    transform:translateY(14px) scale(.98);
+    transition:transform .2s ease;
+    animation:otpIn .25s ease;
+    max-height:92vh; overflow-y:auto;
+}
+.gmail-top{
+    background:#f8f9fa; border-bottom:1px solid #e8eaed;
+    padding:10px 14px; display:flex; align-items:center; gap:7px;
+}
+.gmail-dot{ width:11px; height:11px; border-radius:50%; display:inline-block; border:none; padding:0; cursor:default; }
+button.gmail-dot{ cursor:pointer; }
+.gmail-app{ margin-left:8px; font-size:12px; color:#5f6368; font-weight:600; }
+.gmail-head{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:16px 18px 12px; border-bottom:1px solid #f1f3f4;
+}
+.gmail-avatar{
+    width:40px; height:40px; border-radius:50%;
+    background:#E91E63; color:#fff; font-weight:700; font-size:18px;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+}
+.gmail-headtext{ flex:1; min-width:0; }
+.gmail-from{ font-size:14px; font-weight:700; color:#202124; }
+.gmail-subject{ font-size:13px; color:#202124; font-weight:600; margin-top:2px; }
+.gmail-to{ font-size:12px; color:#5f6368; margin-top:2px; word-break:break-all; }
+.gmail-date{ font-size:11px; color:#5f6368; white-space:nowrap; }
+.gmail-body{ padding:22px 20px; background:#fff; }
+.gmail-headline{ font-size:16px; font-weight:700; color:#202124; margin-bottom:8px; }
+.gmail-text{ font-size:13.5px; color:#5f6368; line-height:1.6; margin-bottom:18px; }
+.gmail-code{
+    text-align:center; background:#fce4ec;
+    border:2px dashed #E91E63; border-radius:12px;
+    padding:16px; font-size:34px; font-weight:800;
+    letter-spacing:12px; color:#E91E63; margin-bottom:14px;
+    font-family:'Courier New', monospace;
+}
+.gmail-expiry{ font-size:12px; color:#80868b; text-align:center; }
+.gmail-foot{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    padding:14px 18px; background:#f8f9fa; border-top:1px solid #e8eaed;
+    font-size:12px; color:#5f6368;
+}
+.gmail-foot #gmailDelivery{ flex:1; min-width:140px; }
+.gmail-label{
+    background:#E91E63; color:#fff; border-radius:4px;
+    padding:2px 7px; font-size:10.5px; font-weight:700; text-transform:uppercase;
+}
+.btn-pink-solid{ background:#E91E63; color:#fff; border-radius:8px; font-weight:600; }
+.btn-pink-solid:hover{ background:#C2185B; color:#fff; }
+
+@media (max-width:576px){
+    .otp-box{ height:48px; font-size:20px; max-width:44px; }
+    .gmail-code{ font-size:26px; letter-spacing:7px; }
+    .gmail-date{ display:none; }
+}
+
+/* ================= LOGIN EXTRAS ================= */
+.forgot-link{
+    color:#E91E63;
+    font-size:13px;
+    font-weight:600;
+    text-decoration:none;
+}
+.forgot-link:hover{ color:#C2185B; text-decoration:underline; }
+.pwd-toggle:focus-visible,
+.btn:focus-visible{ outline:2px solid #E91E63; outline-offset:2px; }

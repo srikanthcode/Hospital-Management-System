@@ -13,40 +13,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         JOIN doctors d ON d.id = a.doctor_id
         LEFT JOIN services s ON s.id = a.service_id";
 
-    if ($role === 'doctor') {
+    $where = '1=1';
+    $params = [];
+    $types = '';
+
+    // Admin filters
+    if ($role === 'admin') {
+        $search = trim((string)($_GET['search'] ?? ''));
+        $filter_status = trim((string)($_GET['status'] ?? ''));
+        $filter_date = trim((string)($_GET['date'] ?? ''));
+
+        if ($search !== '') {
+            $where .= " AND (p.name LIKE ? OR d.name LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+            $types .= 'ss';
+        }
+        if ($filter_status !== '') {
+            $where .= " AND a.status = ?";
+            $params[] = $filter_status;
+            $types .= 's';
+        }
+        if ($filter_date !== '') {
+            $where .= " AND a.appointment_date = ?";
+            $params[] = $filter_date;
+            $types .= 's';
+        }
+    } elseif ($role === 'doctor') {
         $stmt = mysqli_prepare($conn, "SELECT id FROM doctors WHERE user_id=?");
         mysqli_stmt_bind_param($stmt, "i", $user_id);
         mysqli_stmt_execute($stmt);
         $doctor = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
         $doctor_id = $doctor ? $doctor['id'] : 0;
-
-        $stmt = mysqli_prepare($conn, "$base_query WHERE a.doctor_id=? ORDER BY a.appointment_date DESC, a.appointment_time DESC");
-        mysqli_stmt_bind_param($stmt, "i", $doctor_id);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
+        $where .= " AND a.doctor_id = ?";
+        $params[] = $doctor_id;
+        $types .= 'i';
     } elseif ($role === 'patient') {
         $stmt = mysqli_prepare($conn, "SELECT id FROM patients WHERE user_id=?");
         mysqli_stmt_bind_param($stmt, "i", $user_id);
         mysqli_stmt_execute($stmt);
         $patient = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
         $patient_id = $patient ? $patient['id'] : 0;
+        $where .= " AND a.patient_id = ?";
+        $params[] = $patient_id;
+        $types .= 'i';
+    }
 
-        $stmt = mysqli_prepare($conn, "$base_query WHERE a.patient_id=? ORDER BY a.appointment_date DESC, a.appointment_time DESC");
-        mysqli_stmt_bind_param($stmt, "i", $patient_id);
+    // Pagination
+    $limit  = min(max(1, (int)($_GET['limit'] ?? 200)), 500);
+    $offset = max(0, (int)($_GET['offset'] ?? 0));
+
+    try {
+        $sql = "$base_query WHERE $where ORDER BY a.appointment_date DESC, a.appointment_time DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= 'ii';
+
+        $stmt = mysqli_prepare($conn, $sql);
+        if ($params) {
+            mysqli_stmt_bind_param($stmt, $types, ...$params);
+        }
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
-    } else {
-        $result = mysqli_query($conn, "$base_query ORDER BY a.appointment_date DESC, a.appointment_time DESC");
-    }
+        $appointments = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $appointments[] = $row;
+        }
 
-    $appointments = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $appointments[] = $row;
-    }
+        api_json(['appointments' => $appointments]);
 
-    api_json(['appointments' => $appointments]);
+    } catch (Exception $e) {
+        api_json(['error' => 'Failed to load appointments'], 500);
+    }
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     api_require_csrf();
@@ -57,8 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $appointment_id = (int)($input['appointment_id'] ?? $_POST['appointment_id'] ?? 0);
         $new_status = $input['status'] ?? $_POST['status'] ?? '';
 
-        // A patient may only cancel their own appointment; confirming or
-        // completing is a clinical action reserved for staff.
         $allowed_by_role = [
             'admin'   => ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
             'doctor'  => ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
@@ -71,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             api_json(['error' => 'Invalid appointment_id or status'], 400);
         }
 
-        // Scope the update to rows the caller actually owns.
         if ($role === 'doctor') {
             $dstmt = mysqli_prepare($conn, "SELECT id FROM doctors WHERE user_id=?");
             mysqli_stmt_bind_param($dstmt, "i", $user_id);

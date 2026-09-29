@@ -4,15 +4,6 @@ require_role("patient");
 include "../db.php";
 
 $user_id = $_SESSION["user_id"];
-$stmt = mysqli_prepare($conn, "SELECT id FROM patients WHERE user_id = ? LIMIT 1");
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$patient = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-$patient_id = $patient["id"] ?? 0;
-
-$result = mysqli_query($conn, "SELECT mr.*, d.name AS doctor_name FROM medical_records mr
-    LEFT JOIN doctors d ON d.id = mr.doctor_id
-    WHERE mr.patient_id = $patient_id ORDER BY mr.id DESC");
 
 $page_title = "My Medical Records";
 $active = "pt_records";
@@ -24,19 +15,70 @@ include "../includes/layout.php";
 <div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>ID</th><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Treatment</th><th>Prescription</th></tr></thead>
-<tbody>
-<?php if (mysqli_num_rows($result) > 0) { while ($r = mysqli_fetch_assoc($result)) { ?>
-  <tr>
-    <td><?php echo $r['id']; ?></td>
-    <td><?php echo e($r['record_date']); ?></td>
-    <td><?php echo e($r['doctor_name']); ?></td>
-    <td><?php echo e($r['diagnosis']); ?></td>
-    <td><?php echo e($r['treatment']); ?></td>
-    <td><?php echo e($r['prescription']); ?></td>
-  </tr>
-<?php } } else { echo '<tr><td colspan="6" class="text-center">No records.</td></tr>'; } ?>
+<tbody id="recordsBody">
+  <tr><td colspan="6" class="text-center">Loading...</td></tr>
 </tbody>
 </table>
 </div>
 </div>
+
+<script>
+(function() {
+    let polling = false;
+
+    function renderRecords(records) {
+        const tbody = document.getElementById('recordsBody');
+        if (!tbody) return;
+
+        if (!records || records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No records.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        records.forEach(r => {
+            html += `
+                <tr>
+                    <td>${Realtime.esc(r.id)}</td>
+                    <td>${Realtime.esc(r.record_date)}</td>
+                    <td>${Realtime.esc(r.doctor_name || '')}</td>
+                    <td>${Realtime.esc(r.diagnosis)}</td>
+                    <td>${Realtime.esc(r.treatment)}</td>
+                    <td>${Realtime.esc(r.prescription)}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadRecords() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const resp = await fetch('../api/patient_medical_records.php?limit=100', { credentials: 'same-origin' });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderRecords(data.records);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load medical records:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadRecords();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('patient_medical_records', '../api/patient_medical_records.php?limit=100',
+        (data) => {
+            if (data && !data.error) {
+                renderRecords(data.records);
+            }
+        }, 10000);
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

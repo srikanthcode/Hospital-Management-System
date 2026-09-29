@@ -38,10 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $patients = mysqli_query($conn, "SELECT p.id,p.name FROM patients p
     JOIN appointments a ON a.patient_id = p.id WHERE a.doctor_id = $doctor_id GROUP BY p.id");
 
-$list = mysqli_query($conn, "SELECT f.*, p.name AS patient_name FROM follow_ups f
-    JOIN patients p ON p.id = f.patient_id
-    WHERE f.doctor_id = $doctor_id ORDER BY f.follow_up_date DESC");
-
 $page_title = "Follow-ups";
 $active = "doc_followups";
 $base = "../";
@@ -55,9 +51,8 @@ include "../includes/layout.php";
         <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
         <input type="hidden" name="action" value="add">
         <div class="mb-2"><label class="form-label">Patient</label>
-          <select name="patient_id" class="form-select" required>
+          <select name="patient_id" class="form-select" required id="followupPatientSelect">
             <option value="">-- Select --</option>
-            <?php while ($p = mysqli_fetch_assoc($patients)) { echo '<option value="'.$p['id'].'">'.e($p['name']).'</option>'; } ?>
           </select>
         </div>
         <div class="mb-2"><label class="form-label">Follow-up Date</label>
@@ -76,30 +71,107 @@ include "../includes/layout.php";
       <div class="table-responsive">
         <table class="table table-bordered">
           <thead><tr><th>ID</th><th>Patient</th><th>Date</th><th>Remarks</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-          <?php if (mysqli_num_rows($list) > 0) { while ($r = mysqli_fetch_assoc($list)) { ?>
-            <tr>
-              <td><?php echo $r['id']; ?></td>
-              <td><?php echo e($r['patient_name']); ?></td>
-              <td><?php echo e($r['follow_up_date']); ?></td>
-              <td><?php echo e($r['remarks']); ?></td>
-              <td><span class="badge bg-<?php echo $r['status']==='Done'?'success':'warning'; ?>"><?php echo e($r['status']); ?></span></td>
-              <td>
-                <?php if ($r['status'] !== 'Done'): ?>
-                <form method="post" class="d-inline">
-                  <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
-                  <input type="hidden" name="action" value="done">
-                  <input type="hidden" name="id" value="<?php echo $r['id']; ?>">
-                  <button class="btn btn-sm btn-success">Mark Done</button>
-                </form>
-                <?php else: ?> - <?php endif; ?>
-              </td>
-            </tr>
-          <?php } } else { echo '<tr><td colspan="6" class="text-center">No follow-ups.</td></tr>'; } ?>
+          <tbody id="followupsBody">
+            <tr><td colspan="6" class="text-center">Loading...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+    let polling = false;
+    let patientsCache = [];
+
+    function getStatusBadge(status) {
+        return '<span class="badge bg-' + (status === 'Done' ? 'success' : 'warning') + '">' + Realtime.esc(status) + '</span>';
+    }
+
+    function renderFollowups(followups) {
+        const tbody = document.getElementById('followupsBody');
+        if (!tbody) return;
+
+        if (!followups || followups.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No follow-ups.</td></tr>';
+            return;
+        }
+
+        const csrf = '<?php echo e(csrf_token()); ?>';
+        let html = '';
+        followups.forEach(r => {
+            const badge = getStatusBadge(r.status);
+            const action = r.status !== 'Done'
+                ? `<form method="post" class="d-inline">
+                    <input type="hidden" name="csrf" value="${csrf}">
+                    <input type="hidden" name="action" value="done">
+                    <input type="hidden" name="id" value="${Realtime.esc(r.id)}">
+                    <button class="btn btn-sm btn-success">Mark Done</button>
+                  </form>`
+                : '-';
+            html += `
+                <tr>
+                    <td>${Realtime.esc(r.id)}</td>
+                    <td>${Realtime.esc(r.patient_name)}</td>
+                    <td>${Realtime.esc(r.follow_up_date)}</td>
+                    <td>${Realtime.esc(r.remarks)}</td>
+                    <td>${badge}</td>
+                    <td>${action}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function populatePatients() {
+        const select = document.getElementById('followupPatientSelect');
+        if (select && patientsCache.length) {
+            select.innerHTML = '<option value="">-- Select --</option>' +
+                patientsCache.map(p => '<option value="' + Realtime.esc(p.id) + '">' + Realtime.esc(p.name) + '</option>').join('');
+        }
+    }
+
+    async function loadAll() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const [patientsResp, followupsResp] = await Promise.all([
+                fetch('../api/doctor_patients.php?limit=1000', { credentials: 'same-origin' }),
+                fetch('../api/doctor_followups.php?limit=100', { credentials: 'same-origin' })
+            ]);
+
+            if (patientsResp.ok) {
+                const p = await patientsResp.json();
+                if (p && !p.error) { patientsCache = p.patients || []; populatePatients(); }
+            }
+
+            if (followupsResp.ok) {
+                const f = await followupsResp.json();
+                if (f && !f.error) { renderFollowups(f.followups); }
+            }
+        } catch (e) {
+            console.error('Failed to load follow-ups:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadAll();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('doctor_followups', '../api/doctor_followups.php?limit=100',
+        (data) => {
+            if (data && !data.error) {
+                renderFollowups(data.followups);
+            }
+        }, 10000);
+
+    // Refresh after form submission
+    document.querySelector('form[method="post"]').addEventListener('submit', function() {
+        setTimeout(loadAll, 500);
+    });
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

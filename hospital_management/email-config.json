@@ -1,0 +1,9 @@
+{
+  "gmail": {
+    "user": "srikanthz1011@gmail.com",
+    "pass": ""
+  },
+  "from": "srikanthz1011@gmail.com",
+  "fromName": "Lotus Women's Hospital",
+  "_setup": "Gmail App Password required for real email delivery. Get it at: Google Account -> Security -> 2-Step Verification -> App passwords. Never commit real password to git."
+}

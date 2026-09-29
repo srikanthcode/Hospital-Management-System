@@ -93,6 +93,7 @@ $flash = flash_get();
       <a href="<?php echo $base; ?>admin/manage_emergency.php" class="<?php echo $active==='emergency'?'active':''; ?>">Emergency</a>
       <a href="<?php echo $base; ?>admin/manage_ambulance.php" class="<?php echo $active==='ambulance'?'active':''; ?>">Ambulance</a>
       <a href="<?php echo $base; ?>admin/manage_services.php" class="<?php echo $active==='services'?'active':''; ?>">Services</a>
+      <a href="<?php echo $base; ?>admin/manage_salary.php" class="<?php echo $active==='salary'?'active':''; ?>">Salary &amp; Payments</a>
       <div class="group-title">Reports</div>
       <a href="<?php echo $base; ?>reports/index.php" class="<?php echo $active==='reports'?'active':''; ?>">All Reports</a>
     <?php elseif ($user_role === 'doctor'): ?>

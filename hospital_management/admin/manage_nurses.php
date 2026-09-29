@@ -40,7 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$result = mysqli_query($conn, "SELECT * FROM nurses ORDER BY id DESC");
+$search = $_GET['search'] ?? '';
+if ($search) {
+    $searchEsc = mysqli_real_escape_string($conn, $search);
+    $result = mysqli_query($conn, "SELECT * FROM nurses WHERE name LIKE '%$searchEsc%' OR phone LIKE '%$searchEsc%' OR email LIKE '%$searchEsc%' OR department LIKE '%$searchEsc%' ORDER BY id DESC");
+} else {
+    $result = mysqli_query($conn, "SELECT * FROM nurses ORDER BY id DESC");
+}
 
 $page_title = "Manage Nurses";
 $active = "nurses";
@@ -52,10 +58,17 @@ include "../includes/layout.php";
   <h5>Manage Nurses</h5>
   <button class="btn pink-btn" data-bs-toggle="modal" data-bs-target="#addNurseModal">+ Add Nurse</button>
 </div>
+<form method="get" class="mb-3" id="searchForm">
+  <div class="input-group">
+    <input type="text" class="form-control" name="search" id="searchInput" placeholder="Search by name, phone, email, department..." value="<?php echo e($_GET['search'] ?? ''); ?>">
+    <button class="btn btn-outline-danger" type="submit">Search</button>
+    <a href="manage_nurses.php" class="btn btn-outline-secondary">Reset</a>
+  </div>
+</form>
 <div class="table-responsive">
 <table class="table table-bordered table-hover">
 <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Shift</th><th>Department</th><th>Duty</th><th>Patient Care</th><th>Action</th></tr></thead>
-<tbody>
+<tbody id="nursesBody">
 <?php if (mysqli_num_rows($result) > 0) { while ($n = mysqli_fetch_assoc($result)) { ?>
   <tr>
     <td><?php echo $n['id']; ?></td>
@@ -86,7 +99,7 @@ include "../includes/layout.php";
 <div class="modal fade" id="addNurseModal"><div class="modal-dialog"><div class="modal-content">
   <div class="modal-header bg-danger text-white"><h5 class="modal-title">Add Nurse</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
   <div class="modal-body">
-    <form method="post">
+    <form method="post" id="addNurseForm">
       <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
       <input type="hidden" name="action" value="add">
       <div class="mb-2"><label class="form-label">Name *</label><input class="form-control" name="name" required></div>
@@ -102,7 +115,99 @@ include "../includes/layout.php";
   </div>
 </div></div></div>
 
-<div class="text-center mt-3">
-  <a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a>
-</div>
+<div class="text-center mt-3"><a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a></div>
+
+<script>
+(function() {
+    let currentSearch = '<?php echo e($_GET['search'] ?? ''); ?>';
+    let polling = false;
+
+    function renderNurses(nurses) {
+        const tbody = document.getElementById('nursesBody');
+        if (!tbody) return;
+
+        if (!nurses || nurses.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center">No nurses.</td></tr>';
+            return;
+        }
+
+        const csrf = '<?php echo e(csrf_token()); ?>';
+        let html = '';
+        nurses.forEach(n => {
+            html += `
+                <tr>
+                    <td>${Realtime.esc(n.id)}</td>
+                    <td>${Realtime.esc(n.name)}</td>
+                    <td>${Realtime.esc(n.phone)}</td>
+                    <td>${Realtime.esc(n.email)}</td>
+                    <td>${Realtime.esc(n.shift)}</td>
+                    <td>${Realtime.esc(n.department)}</td>
+                    <td>${Realtime.esc(n.duty_assignment)}</td>
+                    <td>${Realtime.esc(n.patient_care)}</td>
+                    <td>
+                        <a href="edit_nurse.php?id=${Realtime.esc(n.id)}" class="btn btn-sm btn-warning">Edit</a>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="${csrf}">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="${Realtime.esc(n.id)}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this nurse?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadNurses() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const params = new URLSearchParams();
+            if (currentSearch) params.set('search', currentSearch);
+            params.set('limit', 100);
+            params.set('offset', 0);
+
+            const resp = await fetch('../api/nurses.php?' + params.toString(), {
+                credentials: 'same-origin'
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderNurses(data.nurses);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load nurses:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Search form handler
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentSearch = document.getElementById('searchInput').value.trim();
+            history.replaceState(null, '', currentSearch ? '?search=' + encodeURIComponent(currentSearch) : 'manage_nurses.php');
+            loadNurses();
+        });
+    }
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('manage_nurses', '../api/nurses.php?' + new URLSearchParams({limit: 100, offset: 0}).toString(),
+        (data) => {
+            if (data && !data.error) {
+                renderNurses(data.nurses);
+            }
+        }, 10000);
+
+    // Refresh after modal actions
+    const addModal = document.getElementById('addNurseModal');
+    if (addModal) {
+        addModal.addEventListener('hidden.bs.modal', loadNurses);
+    }
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

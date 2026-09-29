@@ -4,15 +4,6 @@ require_role("patient");
 include "../db.php";
 
 $user_id = $_SESSION["user_id"];
-$stmt = mysqli_prepare($conn, "SELECT id FROM patients WHERE user_id = ? LIMIT 1");
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$patient = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-$patient_id = $patient["id"] ?? 0;
-
-$result = mysqli_query($conn, "SELECT f.*, d.name AS doctor_name FROM follow_ups f
-    LEFT JOIN doctors d ON d.id = f.doctor_id
-    WHERE f.patient_id = $patient_id ORDER BY f.follow_up_date DESC");
 
 $page_title = "My Follow-ups";
 $active = "pt_followups";
@@ -24,18 +15,74 @@ include "../includes/layout.php";
 <div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>ID</th><th>Date</th><th>Doctor</th><th>Remarks</th><th>Status</th></tr></thead>
-<tbody>
-<?php if (mysqli_num_rows($result) > 0) { while ($r = mysqli_fetch_assoc($result)) { ?>
-  <tr>
-    <td><?php echo $r['id']; ?></td>
-    <td><?php echo e($r['follow_up_date']); ?></td>
-    <td><?php echo e($r['doctor_name']); ?></td>
-    <td><?php echo e($r['remarks']); ?></td>
-    <td><span class="badge bg-<?php echo $r['status']==='Done'?'success':'warning'; ?>"><?php echo e($r['status']); ?></span></td>
-  </tr>
-<?php } } else { echo '<tr><td colspan="5" class="text-center">No follow-ups.</td></tr>'; } ?>
+<tbody id="followupsBody">
+  <tr><td colspan="5" class="text-center">Loading...</td></tr>
 </tbody>
 </table>
 </div>
 </div>
+
+<script>
+(function() {
+    let polling = false;
+
+    function getStatusBadge(status) {
+        return '<span class="badge bg-' + (status === 'Done' ? 'success' : 'warning') + '">' + Realtime.esc(status) + '</span>';
+    }
+
+    function renderFollowups(followups) {
+        const tbody = document.getElementById('followupsBody');
+        if (!tbody) return;
+
+        if (!followups || followups.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No follow-ups.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        followups.forEach(r => {
+            const badge = getStatusBadge(r.status);
+            html += `
+                <tr>
+                    <td>${Realtime.esc(r.id)}</td>
+                    <td>${Realtime.esc(r.follow_up_date)}</td>
+                    <td>${Realtime.esc(r.doctor_name || '')}</td>
+                    <td>${Realtime.esc(r.remarks)}</td>
+                    <td>${getStatusBadge(r.status)}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadFollowups() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const resp = await fetch('../api/patient_followups.php?limit=100', { credentials: 'same-origin' });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderFollowups(data.followups);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load follow-ups:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadFollowups();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('patient_followups', '../api/patient_followups.php?limit=100',
+        (data) => {
+            if (data && !data.error) {
+                renderFollowups(data.followups);
+            }
+        }, 10000);
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

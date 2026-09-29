@@ -3,10 +3,6 @@ require_once "../includes/auth.php";
 require_role("admin");
 include "../db.php";
 
-$page_title = "Bed & Ward Management";
-$active = "beds";
-$base = "../";
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['csrf'] ?? '';
     if (!csrf_check($token)) { flash_set('danger','Invalid CSRF token.'); header("Location: manage_beds.php"); exit(); }
@@ -40,25 +36,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $wards = mysqli_query($conn, "SELECT * FROM wards ORDER BY ward_name");
 $beds  = mysqli_query($conn, "SELECT b.*, w.ward_name FROM beds b LEFT JOIN wards w ON w.id = b.ward_id ORDER BY w.ward_name, b.bed_number");
+$stats = [
+    'available' => (int)mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Available'"))['c'],
+    'occupied' => (int)mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Occupied'"))['c'],
+    'maintenance' => (int)mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Maintenance'"))['c'],
+];
+
+$page_title = "Bed & Ward Management";
+$active = "beds";
+$base = "../";
+include "../includes/layout.php";
 ?>
-<?php include "../includes/layout.php"; ?>
 <div class="row g-3">
   <div class="col-md-4">
     <div class="card p-3">
       <h6>Available Beds</h6>
-      <h2 class="text-success"><?php echo mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Available'"))['c']; ?></h2>
+      <h2 class="text-success" id="statAvailable"><?php echo $stats['available']; ?></h2>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card p-3">
       <h6>Occupied Beds</h6>
-      <h2 class="text-danger"><?php echo mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Occupied'"))['c']; ?></h2>
+      <h2 class="text-danger" id="statOccupied"><?php echo $stats['occupied']; ?></h2>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card p-3">
       <h6>Maintenance</h6>
-      <h2 class="text-warning"><?php echo mysqli_fetch_assoc(mysqli_query($conn,"SELECT COUNT(*) c FROM beds WHERE status='Maintenance'"))['c']; ?></h2>
+      <h2 class="text-warning" id="statMaintenance"><?php echo $stats['maintenance']; ?></h2>
     </div>
   </div>
 </div>
@@ -77,7 +82,7 @@ $beds  = mysqli_query($conn, "SELECT b.*, w.ward_name FROM beds b LEFT JOIN ward
       <div class="table-responsive">
         <table class="table table-bordered table-sm">
           <thead><tr><th>ID</th><th>Name</th><th>Type</th></tr></thead>
-          <tbody>
+          <tbody id="wardsBody">
           <?php while ($w = mysqli_fetch_assoc($wards)) { ?>
             <tr><td><?php echo $w['id']; ?></td><td><?php echo e($w['ward_name']); ?></td><td><?php echo e($w['ward_type']); ?></td></tr>
           <?php } ?>
@@ -95,7 +100,7 @@ $beds  = mysqli_query($conn, "SELECT b.*, w.ward_name FROM beds b LEFT JOIN ward
       <div class="table-responsive">
         <table class="table table-bordered table-sm">
           <thead><tr><th>ID</th><th>Ward</th><th>Bed #</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
+          <tbody id="bedsBody">
           <?php while ($b = mysqli_fetch_assoc($beds)) {
             $cls = $b['status']==='Available'?'success':($b['status']==='Occupied'?'danger':($b['status']==='Reserved'?'info':'warning'));
           ?>
@@ -129,7 +134,7 @@ $beds  = mysqli_query($conn, "SELECT b.*, w.ward_name FROM beds b LEFT JOIN ward
       <input type="hidden" name="csrf" value="<?php echo e(csrf_token()); ?>">
       <input type="hidden" name="action" value="add_bed">
       <div class="mb-2"><label class="form-label">Ward</label>
-        <select name="ward_id" class="form-select" required>
+        <select name="ward_id" class="form-select" required id="bedWardSelect">
           <option value="">-- Select Ward --</option>
           <?php
           $w2 = mysqli_query($conn, "SELECT id, ward_name FROM wards ORDER BY ward_name");
@@ -144,4 +149,116 @@ $beds  = mysqli_query($conn, "SELECT b.*, w.ward_name FROM beds b LEFT JOIN ward
 </div></div></div>
 
 <div class="text-center mt-3"><a href="../admin_dashboard.php" class="btn pink-btn">Back to Dashboard</a></div>
+
+<script>
+(function() {
+    let polling = false;
+
+    function getStatusClass(status) {
+        const classes = {
+            'Available': 'success',
+            'Occupied': 'danger',
+            'Reserved': 'info',
+            'Maintenance': 'warning'
+        };
+        return classes[status] || 'secondary';
+    }
+
+    function renderStats(stats) {
+        Realtime.updateText('statAvailable', stats.available);
+        Realtime.updateText('statOccupied', stats.occupied);
+        Realtime.updateText('statMaintenance', stats.maintenance);
+    }
+
+    function renderWards(wards) {
+        const tbody = document.getElementById('wardsBody');
+        if (!tbody) return;
+
+        if (!wards || wards.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">No wards.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        wards.forEach(w => {
+            html += `<tr><td>${Realtime.esc(w.id)}</td><td>${Realtime.esc(w.ward_name)}</td><td>${Realtime.esc(w.ward_type)}</td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function renderBeds(beds) {
+        const tbody = document.getElementById('bedsBody');
+        if (!tbody) return;
+
+        if (!beds || beds.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No beds.</td></tr>';
+            return;
+        }
+
+        const csrf = '<?php echo e(csrf_token()); ?>';
+        let html = '';
+        beds.forEach(b => {
+            const cls = getStatusClass(b.status);
+            html += `
+                <tr>
+                    <td>${Realtime.esc(b.id)}</td>
+                    <td>${Realtime.esc(b.ward_name)}</td>
+                    <td>${Realtime.esc(b.bed_number)}</td>
+                    <td><span class="badge bg-${cls}">${Realtime.esc(b.status)}</span></td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="${csrf}">
+                            <input type="hidden" name="action" value="delete_bed">
+                            <input type="hidden" name="bed_id" value="${Realtime.esc(b.id)}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this bed?');">Del</button>
+                        </form>
+                    </td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadAll() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const resp = await fetch('../api/beds.php', {
+                credentials: 'same-origin'
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && !data.error) {
+                    renderStats(data.stats);
+                    renderWards(data.wards);
+                    renderBeds(data.beds);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load beds data:', e);
+        } finally {
+            polling = false;
+        }
+    }
+
+    // Initial load
+    loadAll();
+
+    // Poll for real-time updates every 10 seconds
+    Realtime.startPolling('manage_beds', '../api/beds.php',
+        (data) => {
+            if (data && !data.error) {
+                renderStats(data.stats);
+                renderWards(data.wards);
+                renderBeds(data.beds);
+            }
+        }, 10000);
+
+    // Refresh after modal actions
+    const addBedModal = document.getElementById('addBedModal');
+    if (addBedModal) {
+        addBedModal.addEventListener('hidden.bs.modal', loadAll);
+    }
+})();
+</script>
 <?php include "../includes/layout_footer.php"; ?>

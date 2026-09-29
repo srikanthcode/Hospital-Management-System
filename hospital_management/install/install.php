@@ -15,7 +15,7 @@
 
 // Force db.php to re-check / re-create the schema instead of trusting the
 // per-instance "schema already exists" marker.
-$marker = sys_get_temp_dir() . '/lotus_pg_schema_ok';
+$marker = sys_get_temp_dir() . '/lotus_mysql_ok';
 if (is_file($marker)) {
     @unlink($marker);
 }
@@ -30,7 +30,7 @@ $admin_role  = 'admin';
 
 $hash = password_hash($admin_pass, PASSWORD_DEFAULT);
 $stmt = mysqli_prepare($conn, "INSERT INTO users (name,email,password,role) VALUES (?,?,?,?)
-    ON CONFLICT (email) DO UPDATE SET password=EXCLUDED.password, role=EXCLUDED.role");
+    ON DUPLICATE KEY UPDATE password=VALUES(password), role=VALUES(role)");
 mysqli_stmt_bind_param($stmt, "ssss", $admin_name, $admin_email, $hash, $admin_role);
 mysqli_stmt_execute($stmt);
 
